@@ -1,0 +1,286 @@
+/* Buggy-Thangs — procedural needle-felted plush renderer (SVG).
+   Every Thang is drawn from the same anatomical blueprint:
+   mossy spiky body, felt snout + peach lips + side-blep, orange tail,
+   two knit eyestalks with sleepy glass eyes, textile wings, six knit legs in felt boots. */
+(function () {
+  'use strict';
+  let uid = 0;
+
+  const CHARS = {
+    muffi:   { name: 'Muffi',   a: '#c8342b', b: '#f2c230', wing: 'denim',   trim: '#f2c230', boot: '#35589a', seed: 7 },
+    doza:    { name: 'Doza',    a: '#5b3a8f', b: '#41b3a3', wing: 'flannel', trim: '#ece4c8', boot: '#6e4528', seed: 13 },
+    kroop:   { name: 'Kroop',   a: '#1e1d1b', b: '#ece8dc', wing: 'cord',    trim: '#d4462e', boot: '#a3312a', seed: 21 },
+    pillo:   { name: 'Pillo',   a: '#ec8db0', b: '#97dcbe', wing: 'floral',  trim: '#7f56b8', boot: '#dcae34', seed: 33 },
+    gnarl:   { name: 'Gnarl',   a: '#3e6a2e', b: '#c6a06a', wing: 'burlap',  trim: '#3a2a1c', boot: '#2e2e2e', seed: 44 },
+    bramble: { name: 'Bramble', a: '#2b4f7a', b: '#e98a3c', wing: 'denim',   trim: '#e98a3c', boot: '#5a5a52', seed: 55 }
+  };
+
+  const GREENS = ['#6f8f35', '#86a73f', '#4d6b25', '#a1b64e', '#5c7a2e', '#bcc566', '#3f5a1f', '#7b9a3a'];
+
+  const EYE = {
+    normal: { sclera: '#f3eee1', iris: '#5b3a1b', ir: 8.5, pr: 4.6, rim: '#ef8a63', lid: '#86a744', glint: .9, veins: false },
+    wrong:  { sclera: '#f1ebdc', iris: '#6b5a3a', ir: 8.5, pr: 1.5, rim: '#ef8a63', lid: '#86a744', glint: .9, veins: false },
+    horror: { sclera: '#eee0d0', iris: '#160806', ir: 10,  pr: 8.6, rim: '#d9694a', lid: '#6f8a3a', glint: .7, veins: true },
+    shadow: { sclera: '#5a5248', iris: '#0b0a09', ir: 9,   pr: 6,   rim: '#141210', lid: '#0e0d0c', glint: .55, veins: false }
+  };
+
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const f = n => (+n).toFixed(1);
+
+  function rng(seed) {
+    let s = (seed * 2654435761) >>> 0 || 1;
+    return () => { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; };
+  }
+
+  function wingPattern(id, type, shadow) {
+    if (shadow) return `<pattern id="${id}" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#0f0e0d"/></pattern>`;
+    switch (type) {
+      case 'denim': return `<pattern id="${id}" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><rect width="6" height="6" fill="#5b7fb3"/><rect width="6" height="2" fill="#4a6c9e"/><rect y="4" width="6" height="1" fill="#8aa6cc" opacity=".6"/></pattern>`;
+      case 'flannel': return `<pattern id="${id}" width="24" height="24" patternUnits="userSpaceOnUse" patternTransform="rotate(12)"><rect width="24" height="24" fill="#a8322c"/><rect width="24" height="8" y="8" fill="#2a1a18" opacity=".55"/><rect width="8" height="24" x="8" fill="#2a1a18" opacity=".55"/><rect width="24" height="1.5" y="3" fill="#e8c9a0" opacity=".5"/><rect width="1.5" height="24" x="3" fill="#e8c9a0" opacity=".5"/></pattern>`;
+      case 'cord': return `<pattern id="${id}" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-20)"><rect width="6" height="6" fill="#c9682c"/><rect width="2" height="6" fill="#a4501e"/><rect x="4" width="1" height="6" fill="#e39150"/></pattern>`;
+      case 'floral': return `<pattern id="${id}" width="22" height="22" patternUnits="userSpaceOnUse"><rect width="22" height="22" fill="#f1c4cd"/><g fill="#fff" opacity=".8"><circle cx="4" cy="6" r="2.4"/><circle cx="8" cy="6" r="2.4"/><circle cx="6" cy="4" r="2.4"/><circle cx="6" cy="8" r="2.4"/></g><circle cx="6" cy="6" r="1.5" fill="#e3a72e"/><g fill="#8fcfb0"><circle cx="15" cy="16" r="2.2"/><circle cx="19" cy="16" r="2.2"/><circle cx="17" cy="14" r="2.2"/><circle cx="17" cy="18" r="2.2"/></g><circle cx="17" cy="16" r="1.3" fill="#7f56b8"/></pattern>`;
+      default: return `<pattern id="${id}" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#b89a6a"/><path d="M0 2.5h5M2.5 0v5" stroke="#8f7449" stroke-width="1.2"/></pattern>`;
+    }
+  }
+
+  function blob(R, cx, cy, rx, ry, n, j) {
+    const pts = [];
+    for (let i = 0; i < n; i++) {
+      const t = i / n * Math.PI * 2, k = 1 + (R() - .5) * j;
+      pts.push([cx + Math.cos(t) * rx * k, cy + Math.sin(t) * ry * k]);
+    }
+    const last = pts[n - 1], first = pts[0];
+    let d = `M${f((last[0] + first[0]) / 2)},${f((last[1] + first[1]) / 2)}`;
+    for (let i = 0; i < n; i++) {
+      const p = pts[i], q = pts[(i + 1) % n];
+      d += `Q${f(p[0])},${f(p[1])} ${f((p[0] + q[0]) / 2)},${f((p[1] + q[1]) / 2)}`;
+    }
+    return d + 'Z';
+  }
+
+  function fur(R, cx, cy, rx, ry, count, shadow) {
+    let s = '';
+    for (let i = 0; i < count; i++) {
+      const t = R() * Math.PI * 2, u = Math.sqrt(R());
+      const x = cx + Math.cos(t) * rx * u * .98, y = cy + Math.sin(t) * ry * u * .98;
+      const a = t + (R() - .5) * 1.5;
+      const len = u > .85 ? 8 + R() * 10 : 4 + R() * 7;
+      const col = shadow ? (R() < .5 ? '#0a0909' : '#151311') : (R() < .045 ? '#c98a3a' : GREENS[(R() * GREENS.length) | 0]);
+      s += `<path d="M${f(x)},${f(y)}l${f(Math.cos(a) * len)},${f(Math.sin(a) * len)}" stroke="${col}" stroke-width="${f(1.5 + R() * 1.7)}"/>`;
+    }
+    // shaggy faux-fur tufts
+    for (let i = 0; i < 18; i++) {
+      const t = R() * Math.PI * 2, u = .4 + R() * .55;
+      const x = cx + Math.cos(t) * rx * u, y = cy + Math.sin(t) * ry * u;
+      const col = shadow ? '#121110' : (R() < .5 ? '#c7cc7a' : '#9db552');
+      for (let k = 0; k < 3; k++) {
+        s += `<path d="M${f(x)},${f(y)}q${f((R() - .5) * 10)},${f(-6 - R() * 5)} ${f((R() - .5) * 14)},${f(-10 - R() * 6)}" stroke="${col}" stroke-width="1.3" opacity=".85"/>`;
+      }
+    }
+    return `<g stroke-linecap="round" fill="none">${s}</g>`;
+  }
+
+  function lidMarkup(o, lid, rim) {
+    const r = 17;
+    o = clamp(o, .04, 1);
+    if (o > .97) {
+      let s = '';
+      [-.9, -.45, 0, .45, .9].forEach(k => {
+        const a = -Math.PI / 2 + k;
+        const x = Math.cos(a) * r, y = Math.sin(a) * r;
+        s += `<path d="M${f(x)},${f(y)}l${f(Math.cos(a) * 8)},${f(Math.sin(a) * 9)}" stroke="#14100c" stroke-width="1.2" stroke-linecap="round"/>`;
+      });
+      return s;
+    }
+    const L = -r + 2 * r * (1 - o);
+    const x0 = Math.sqrt(Math.max(0, r * r - L * L));
+    const large = L > 0 ? 1 : 0;
+    let s = `<path d="M${f(-x0)},${f(L)}A${r},${r} 0 ${large} 1 ${f(x0)},${f(L)}Q0,${f(L + 5)} ${f(-x0)},${f(L)}Z" fill="${lid}"/>`;
+    s += `<path d="M${f(-x0 * .8)},${f(L - 6)}Q0,${f(L - 3)} ${f(x0 * .8)},${f(L - 6)}" stroke="#000" stroke-opacity=".12" stroke-width="2" fill="none"/>`;
+    s += `<path d="M${f(-x0)},${f(L)}Q0,${f(L + 5)} ${f(x0)},${f(L)}" fill="none" stroke="${rim}" stroke-width="3.4" stroke-linecap="round"/>`;
+    [-.8, -.4, 0, .4, .8].forEach(k => {
+      const px = k * x0 * .9, py = L + 2.5 * (1 - k * k) + 1;
+      const dir = k < 0 ? -1 : k > 0 ? 1 : 0;
+      s += `<path d="M${f(px)},${f(py)}q${f(k * 2)},4 ${f(k * 6 + dir * 1.5)},${f(9 + (1 - Math.abs(k)) * 2)}" stroke="#14100c" stroke-width="1.15" fill="none" stroke-linecap="round"/>`;
+    });
+    return s;
+  }
+
+  function eye(cx, cy, o, E, lx, ly, R) {
+    let veins = '';
+    if (E.veins) {
+      for (let i = 0; i < 9; i++) {
+        const a = R() * Math.PI * 2, a2 = a + (R() - .5) * .6;
+        veins += `<path d="M${f(Math.cos(a) * 16.5)},${f(Math.sin(a) * 16.5)}Q${f(Math.cos(a2) * 13 + (R() - .5) * 4)},${f(Math.sin(a2) * 13 + (R() - .5) * 4)} ${f(Math.cos(a2) * 9.5)},${f(Math.sin(a2) * 9.5)}" stroke="#b02a33" stroke-width=".9" fill="none" opacity=".85"/>`;
+      }
+    }
+    return `<g class="eye" transform="translate(${cx},${cy})">
+      <circle r="17" fill="${E.sclera}"/>${veins}
+      <circle r="17" fill="url(#__SHADE__)"/>
+      <g class="pupil" transform="translate(${f(lx * 6)},${f(ly * 5)})"><circle r="${E.ir}" fill="${E.iris}"/><circle class="pp" r="${E.pr}" fill="#0a0604"/><circle cx="-3" cy="-3.2" r="2" fill="#fff" opacity="${E.glint}"/><circle cx="2.6" cy="2.4" r=".9" fill="#fff" opacity="${E.glint * .6}"/></g>
+      <g class="lid">${lidMarkup(o, E.lid, E.rim)}</g>
+      <circle r="17" fill="none" stroke="${E.rim}" stroke-width="4.6"/>
+    </g>`;
+  }
+
+  function orb(cx, cy, r, R, shadow) {
+    let s = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${shadow ? '#0d0c0b' : '#6f9136'}"/>`;
+    s += `<circle cx="${cx - r * .25}" cy="${cy - r * .3}" r="${r * .7}" fill="#fff" opacity="${shadow ? 0 : .07}"/>`;
+    let t = '';
+    for (let i = 0; i < 46; i++) {
+      const a = R() * Math.PI * 2, rr = r - 4 + R() * 4, len = 3 + R() * 5;
+      const col = shadow ? '#0a0a09' : GREENS[(R() * GREENS.length) | 0];
+      t += `<path d="M${f(cx + Math.cos(a) * rr)},${f(cy + Math.sin(a) * rr)}l${f(Math.cos(a + (R() - .5)) * len)},${f(Math.sin(a + (R() - .5)) * len)}" stroke="${col}" stroke-width="1.6"/>`;
+    }
+    return s + `<g stroke-linecap="round">${t}</g>`;
+  }
+
+  function boot(fx, fy, color, shadow, R) {
+    const c = shadow ? '#0c0b0a' : color;
+    let scuffs = '';
+    if (!shadow) for (let i = 0; i < 3; i++) scuffs += `<circle cx="${f(-4 + R() * 18)}" cy="${f(-2 + R() * 6)}" r="${f(.6 + R())}" fill="#fff" opacity=".22"/>`;
+    return `<g transform="translate(${f(fx)},${f(fy)})">
+      <path d="M-7,-12L5,-12L6,-3Q17,-2 17,4L17,6L-8,6L-8,-1Z" fill="${c}" stroke="#1d1712" stroke-width="1.6" stroke-linejoin="round"/>
+      <rect x="-9" y="5" width="27" height="3.6" rx="1.6" fill="#2b2420"/>
+      ${shadow ? '' : '<path d="M-3,-9l6,2M-3,-6l6,2M-3,-3l6,2" stroke="#efe6d2" stroke-width="1.1"/><path d="M8,-1q4,-1 7,2" stroke="#fff" stroke-opacity=".28" stroke-width="1.5" fill="none"/>'}${scuffs}
+    </g>`;
+  }
+
+  function build(opts) {
+    opts = opts || {};
+    const c = CHARS[opts.char] || CHARS.muffi;
+    const mode = opts.mode || 'normal';
+    const shadow = mode === 'shadow';
+    const horror = mode === 'horror';
+    const E = Object.assign({}, EYE[mode] || EYE.normal);
+    if (opts.pupil === 'pin') { E.pr = 1.5; }
+    if (opts.pupil === 'void') { E.pr = E.ir - .4; E.iris = '#120806'; }
+    const open = opts.open == null ? .22 : +opts.open;
+    const lx = +opts.lookX || 0, ly = +opts.lookY || 0;
+    const id = 'bt' + (++uid);
+    const R = rng(c.seed);
+    const view = opts.view || '0 0 400 360';
+
+    const A = shadow ? '#0e0d0c' : c.a, B = shadow ? '#141311' : c.b;
+    const outline = shadow ? '#060505' : '#2a2118';
+
+    let s = `<svg class="thang thang-${mode}" viewBox="${view}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${c.name}, a Buggy-Thang plush" data-lid="${E.lid}" data-rim="${E.rim}" data-open="${open}">`;
+    s += `<defs>
+      <filter id="${id}f" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="${c.seed}" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.5" xChannelSelector="R" yChannelSelector="G"/></filter>
+      <pattern id="${id}s" width="12" height="12" patternUnits="userSpaceOnUse"><rect width="12" height="12" fill="${A}"/><rect width="12" height="6" fill="${B}"/><rect width="12" height="1" y="5.5" fill="#000" opacity=".15"/></pattern>
+      ${wingPattern(id + 'w', c.wing, shadow)}
+      <radialGradient id="${id}g" cx=".42" cy=".32" r=".75"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".42"/></radialGradient>
+      <radialGradient id="${id}e" cx=".4" cy=".35" r=".7"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".28"/></radialGradient>
+    </defs>`;
+
+    // ground shadow
+    s += `<ellipse cx="215" cy="324" rx="128" ry="10" fill="#000" opacity="${shadow ? .5 : .16}"/>`;
+
+    s += `<g filter="url(#${id}f)">`;
+    // tail
+    const tail = shadow ? '#0c0b0a' : '#e07a2a';
+    s += `<path d="M104,214C70,224 50,204 57,184C62,170 80,174 78,189" fill="none" stroke="${outline}" stroke-width="13.5" stroke-linecap="round"/>`;
+    s += `<path d="M104,214C70,224 50,204 57,184C62,170 80,174 78,189" fill="none" stroke="${tail}" stroke-width="10.5" stroke-linecap="round"/>`;
+    if (!shadow) s += `<path d="M98,212C72,219 58,204 62,188" fill="none" stroke="#f3a25a" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>`;
+
+    // wings
+    const trim = shadow ? '#121110' : c.trim;
+    const wing = (cx, cy, rx, ry, rot) => {
+      let w = `<g transform="rotate(${rot} ${cx} ${cy})">`;
+      w += `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#${id}w)" stroke="${trim}" stroke-width="7"/>`;
+      w += `<ellipse cx="${cx}" cy="${cy}" rx="${rx - 6}" ry="${ry - 6}" fill="none" stroke="${shadow ? '#000' : '#2a2118'}" stroke-width="1.4" stroke-dasharray="2 6" opacity=".7"/>`;
+      const bx = cx + rx * .85, by = cy + ry * .15;
+      [[-.95, -.55], [-.9, -.05], [-.7, .45], [-.3, -.85], [-.2, .75]].forEach(([u, v]) => {
+        const ex = cx + rx * u, ey = cy + ry * v;
+        w += `<path d="M${f(bx)},${f(by)}Q${f((bx + ex) / 2)},${f((by + ey) / 2 - 8)} ${f(ex)},${f(ey)}" stroke="${shadow ? '#000' : '#1e2433'}" stroke-width="2" fill="none" stroke-dasharray="5 2.5" opacity=".8"/>`;
+      });
+      return w + '</g>';
+    };
+    s += wing(150, 108, 72, 44, -20);
+    s += wing(126, 132, 62, 38, -38);
+
+    // legs + boots
+    const legs = [[128, -8, 0], [162, 6, 1], [194, -6, 0], [230, 8, 1], [262, -5, 0], [288, 7, 1]];
+    legs.forEach(([x, k, back]) => {
+      const fy = back ? 310 : 317;
+      const kx = x + k * 2.2, ky = 280 - back * 4;
+      const fx = x + k * .6 + (x < 210 ? -6 : 6);
+      const d = `M${x},238Q${kx},${ky} ${f(fx)},${fy - 10}`;
+      s += `<path d="${d}" stroke="${outline}" stroke-width="9" fill="none" stroke-linecap="round"/>`;
+      s += `<path d="${d}" stroke="url(#${id}s)" stroke-width="6.4" fill="none" stroke-linecap="round"/>`;
+      if (back) s += `<path d="${d}" stroke="#000" stroke-opacity=".3" stroke-width="6.4" fill="none" stroke-linecap="round"/>`;
+      s += boot(fx - 2, fy, c.boot, shadow, R);
+    });
+
+    // body
+    const bodyD = blob(R, 205, 205, 113, 61, 30, .14);
+    s += `<path d="${bodyD}" fill="${shadow ? '#0b0a09' : '#4e6a2a'}"/>`;
+    s += `<path d="${bodyD}" fill="url(#${id}g)"/>`;
+    s += fur(R, 205, 205, 113, 61, 360, shadow);
+    s += `<ellipse cx="205" cy="232" rx="105" ry="32" fill="#000" opacity="${shadow ? .3 : .14}"/>`;
+
+    // snout
+    const snout = shadow ? '#0d0c0b' : '#7f9d3f';
+    s += `<path d="M284,193Q330,188 348,214Q357,232 346,247Q330,263 295,253Q276,240 284,193Z" fill="${snout}"/>`;
+    if (!shadow) s += `<path d="M292,200Q326,196 340,214" stroke="#fff" stroke-opacity=".12" stroke-width="6" fill="none" stroke-linecap="round"/>`;
+    s += `</g>`; // end felt filter group
+
+    // mouth
+    const lip = shadow ? '#141210' : '#f1a58b', lipS = shadow ? '#0a0909' : '#cf7a63';
+    if (horror) {
+      s += `<ellipse cx="344" cy="230" rx="10" ry="13" fill="#120606"/>`;
+      let teeth = '';
+      for (let i = 0; i < 4; i++) {
+        const x = 337 + i * 4;
+        teeth += `<path d="M${x},${220}l2,5.5l2,-5.5z" fill="#efe6d0"/><path d="M${x + 1},${241}l2,-5l2,5z" fill="#e6dcc4"/>`;
+      }
+      s += teeth;
+      s += `<path d="M339,238q-3,22 4,38q4,7 8,-2q2,-16 -3,-35z" fill="#c4475e" stroke="#8e2f42" stroke-width="1"/>`;
+      s += `<ellipse cx="344" cy="216" rx="12" ry="7.5" fill="${lip}" stroke="${lipS}" stroke-width="2"/>`;
+      s += `<ellipse cx="344" cy="243" rx="12" ry="7.5" fill="${lip}" stroke="${lipS}" stroke-width="2"/>`;
+    } else {
+      s += `<ellipse cx="344" cy="228" rx="11.5" ry="17" fill="${lip}" stroke="${lipS}" stroke-width="2"/>`;
+      if (!shadow) s += `<ellipse cx="341" cy="220" rx="4" ry="5" fill="#fff" opacity=".25"/>`;
+      s += `<path d="M334,229Q344,234 355,228" stroke="${shadow ? '#000' : '#9c4a40'}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+      s += `<path d="M337,236q2,9 8,7q3,-4 -1,-8z" fill="${shadow ? '#151312' : '#e2627a'}" stroke="${shadow ? '#000' : '#b3485c'}" stroke-width="1"/>`;
+    }
+
+    // eyestalks
+    const stalk = d => `<path d="${d}" stroke="${outline}" stroke-width="15" fill="none" stroke-linecap="round"/><path d="${d}" stroke="url(#${id}s)" stroke-width="12" fill="none" stroke-linecap="round"/>`;
+    s += stalk('M262,168Q250,120 238,76');
+    s += stalk('M290,172Q304,118 302,66');
+
+    // orbs + eyes
+    s += `<g filter="url(#${id}f)">${orb(238, 72, 27, R, shadow)}${orb(302, 62, 29, R, shadow)}</g>`;
+    const eyeR = rng(c.seed + 99);
+    s += eye(238, 72, open, E, lx, ly, eyeR).replace('__SHADE__', id + 'e');
+    s += eye(302, 62, open, E, lx, ly, eyeR).replace('__SHADE__', id + 'e');
+
+    return s + '</svg>';
+  }
+
+  function setOpen(svg, o) {
+    if (!svg) return;
+    svg.dataset.open = o;
+    const lid = svg.dataset.lid, rim = svg.dataset.rim;
+    svg.querySelectorAll('.lid').forEach(g => { g.innerHTML = lidMarkup(o, lid, rim); });
+  }
+
+  function look(svg, x, y) {
+    svg.querySelectorAll('.pupil').forEach(p => p.setAttribute('transform', `translate(${f(x * 6)},${f(y * 5)})`));
+  }
+
+  function mount(el) {
+    const d = el.dataset;
+    el.innerHTML = build({
+      char: d.thang, open: d.open, mode: d.mode, view: d.view, pupil: d.pupil,
+      lookX: d.lookX, lookY: d.lookY
+    });
+    const svg = el.querySelector('svg');
+    if (d.track === '1') svg.dataset.track = '1';
+    return svg;
+  }
+
+  window.Thang = { build, mount, setOpen, look, CHARS, lidMarkup };
+  document.querySelectorAll('[data-thang]').forEach(mount);
+})();
