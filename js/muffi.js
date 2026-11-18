@@ -270,8 +270,17 @@
     svg.querySelectorAll('.pupil').forEach(p => p.setAttribute('transform', `translate(${f(x * 6)},${f(y * 5)})`));
   }
 
+  function toURL(opts) {
+    return URL.createObjectURL(new Blob([build(opts)], { type: 'image/svg+xml' }));
+  }
+
   function mount(el) {
     const d = el.dataset;
+    if (d.photo) {
+      const name = (CHARS[d.thang] || CHARS.muffi).name;
+      el.innerHTML = `<img class="photo" src="${d.photo}" alt="${name}, a hand-felted Buggy-Thang plush photographed on studio canvas" decoding="async">`;
+      return null;
+    }
     el.innerHTML = build({
       char: d.thang, open: d.open, mode: d.mode, view: d.view, pupil: d.pupil,
       lookX: d.lookX, lookY: d.lookY
@@ -281,6 +290,6 @@
     return svg;
   }
 
-  window.Thang = { build, mount, setOpen, look, CHARS, lidMarkup };
+  window.Thang = { build, mount, setOpen, look, toURL, CHARS, lidMarkup };
   document.querySelectorAll('[data-thang]').forEach(mount);
 })();

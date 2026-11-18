@@ -84,12 +84,13 @@
   let stage = 0, maxStage = 0, p = 0;
   let lastScroll = Date.now(), lastY = scrollY, upTravel = 0;
 
+  let curSec = null;
   function currentStage() {
     const mid = innerHeight * .5;
-    let s = 0;
+    let s = 0; curSec = null;
     for (const sec of sections) {
       const r = sec.getBoundingClientRect();
-      if (r.top <= mid) s = +sec.dataset.s; else break;
+      if (r.top <= mid) { s = +sec.dataset.s; curSec = sec; } else break;
     }
     return s;
   }
@@ -109,6 +110,7 @@
     lastScroll = Date.now();
     idleWhispered = false;
     hideWatcher();
+    calmNudge();
     swaps();
     wake();
   }
@@ -145,6 +147,7 @@
         el.dataset.open = open; el.dataset.mode = mode || 'normal';
         el.dataset.track = track || '0';
         if (pupil) el.dataset.pupil = pupil; else delete el.dataset.pupil;
+        delete el.dataset.photo;
         window.Thang.mount(el);
         el.dataset.laterLevel = best;
       }
@@ -230,7 +233,7 @@
   let idleWhispered = false, lastUpWhisper = 0, lastLeave = 0;
   setInterval(() => {
     const idle = Date.now() - lastScroll;
-    if (!idleWhispered && stage >= 2 && idle > 6000 && !finaleRunning) {
+    if (!idleWhispered && stage >= 2 && idle > 6000 && !body.classList.contains('taking')) {
       idleWhispered = true;
       whisper(pick(stage >= 4 ? W.idle4 : stage === 3 ? W.idle3 : W.idle2));
     }
@@ -239,7 +242,7 @@
       whisper(pick(W.up));
     }
     watcherTick(idle);
-    finaleTick(idle);
+    nudgeTick(idle);
   }, 250);
 
   document.documentElement.addEventListener('mouseleave', () => {
@@ -296,41 +299,63 @@
     if (Math.abs(+svg.dataset.open - open) > .004) window.Thang.setOpen(svg, open);
     wakeFace.style.setProperty('--lum', (.32 + q * .6).toFixed(3));
     wakeFace.style.setProperty('--zoom', (1 + Math.pow(clamp((q - .45) / .55, 0, 1), 1.6) * 1.35).toFixed(3));
+    if (q !== wake._q) { wake._q = q; window.dispatchEvent(new CustomEvent('bt:wake', { detail: q })); }
     let on = -1;
     wakeLines.forEach((l, i) => { if (q >= +l.dataset.at) on = i; });
     wakeLines.forEach((l, i) => l.classList.toggle('on', i === on));
   }
 
-  /* ---------- finale: wait at the bottom long enough and the lights go out ---------- */
-  const blackout = $('.blackout');
-  let finaleRunning = false, finaleDone = false;
-  function finaleTick(idle) {
-    if (!blackout || finaleRunning || finaleDone) return;
-    if (p > .985 && idle > 3500) runFinale();
+  /* ---------- scroll prompts: gentle, then passive aggressive, then hostile ---------- */
+  const NUDGE = [
+    ['scroll down', 'there\'s more below', 'keep going, it\'s cozy down here', 'just a little further', 'go on. down you go.'],
+    ['it\'s fine. take your time.', 'most people would have scrolled by now.', 'it\'s not like it waited thirty years or anything.', 'no, stay. that\'s fine. really.', 'wow. okay.', 'we\'ll just wait, then.'],
+    ['scroll.', 'down.', 'go down.', 'it is waiting for you.', 'don\'t make it come up there.', 'now.', 'DOWN.']
+  ];
+  const nudge = document.createElement('div');
+  nudge.className = 'nudge';
+  nudge.setAttribute('aria-hidden', 'true');
+  nudge.innerHTML = '<span class="txt"></span><span class="chev">↓</span>';
+  body.appendChild(nudge);
+  const nTxt = nudge.querySelector('.txt');
+  let stops = 0, nudgeIdx = [0, 0, 0], loudThisIdle = false;
+  function baseTier() {
+    if (!curSec || page === '404') return -1;
+    const t = curSec.dataset.tier;
+    if (t == null) return curSec.classList.contains('dark') ? 0 : -1;
+    return +t;
   }
-  function runFinale() {
-    finaleRunning = true;
-    store.set('finished', true);
-    blackout.classList.add('on');
-    const eyes = $('.dark-eyes', blackout), lines = $$('.finale-text p', blackout);
-    const T = reduce ? 0 : 1;
-    setTimeout(() => {
-      eyes.style.left = (15 + Math.random() * 55) + 'vw';
-      eyes.style.top = (18 + Math.random() * 35) + 'vh';
-      eyes.classList.add('on');
-    }, 3200 * T);
-    lines.forEach((l, i) => setTimeout(() => l.classList.add('on'), (6500 + i * 3800) * T));
-    document.title = 'it\'s in the room';
+  function setNudge(tier, text, loud) {
+    nudge.classList.remove('t0', 't1', 't2');
+    nudge.classList.add('t' + tier, 'on');
+    nudge.classList.toggle('loud', !!loud);
+    if (nTxt.textContent !== text) nTxt.textContent = text;
   }
-  if (blackout) {
-    blackout.addEventListener('click', e => {
-      const last = $$('.finale-text p', blackout).pop();
-      if (!last || !last.classList.contains('on')) return;
-      if (e.target.closest('a')) e.preventDefault();
-      blackout.classList.remove('on');
-      finaleRunning = false; finaleDone = true;
-      setTimeout(() => window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }), 600);
-    });
+  const inlinePrompts = $$('.prompt');
+  function promptVisible() {
+    return inlinePrompts.some(el => { const r = el.getBoundingClientRect(); return r.top < innerHeight && r.bottom > innerHeight * .45; });
+  }
+  function calmNudge() {
+    loudThisIdle = false;
+    if (promptVisible()) { nudge.classList.remove('on', 'loud'); return; }
+    const bt = baseTier();
+    const nearEnd = page !== 'home' && p > .97;
+    if (bt < 0 || nearEnd || body.classList.contains('taking')) { nudge.classList.remove('on', 'loud'); return; }
+    const tier = Math.min(2, bt + Math.floor(stops / 3));
+    setNudge(tier, NUDGE[tier][0], false);
+    nudge.style.setProperty('--ns', (1 + Math.min(stops, 8) * .05).toFixed(2));
+  }
+  function nudgeTick(idle) {
+    const bt = baseTier();
+    if (bt < 0 || body.classList.contains('taking') || (page !== 'home' && p > .97) || promptVisible()) return;
+    if (!loudThisIdle && idle > 2600) {
+      loudThisIdle = true;
+      stops++;
+      const tier = Math.min(2, bt + Math.floor(stops / 2));
+      const list = NUDGE[tier];
+      nudgeIdx[tier] = Math.min(list.length - 1, nudgeIdx[tier] + 1);
+      setNudge(tier, list[nudgeIdx[tier]], true);
+      nudge.style.setProperty('--ns', (1.1 + Math.min(stops, 10) * .09).toFixed(2));
+    }
   }
 
   /* ---------- returning visitors find things slightly rearranged ---------- */
@@ -339,10 +364,10 @@
     const hero = $('.hero [data-thang]');
     if (finished) {
       if (eb) eb.textContent = 'You came back. It knew you would.';
-      if (hero) { hero.dataset.open = '.8'; hero.dataset.track = '1'; hero.dataset.pupil = 'pin'; window.Thang.mount(hero); }
+      if (hero) { delete hero.dataset.photo; hero.dataset.open = '.8'; hero.dataset.track = '1'; hero.dataset.pupil = 'pin'; window.Thang.mount(hero); }
     } else if (visits > 1 && deepest >= 2) {
       if (eb) eb.textContent = 'Welcome back. Muffi didn\'t sleep.';
-      if (hero) { hero.dataset.open = '.42'; hero.dataset.track = '1'; window.Thang.mount(hero); }
+      if (hero) { delete hero.dataset.photo; hero.dataset.open = '.42'; hero.dataset.track = '1'; window.Thang.mount(hero); }
     }
   }
 

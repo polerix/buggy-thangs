@@ -2,6 +2,8 @@
 
 A marketing site for a line of hand-felted plush art toys that gets steadily stranger as you scroll, then outright frightening.
 
+**Muffi render:** `images/muffi.webp` is used for every Muffi before its eyes start moving; from then on the code-drawn plush takes over.
+
 **Pages:** `index.html` (full descent), `shop.html`, `care.html`, `about.html`, `404.html`.
 
 ## How it works
@@ -13,7 +15,8 @@ A marketing site for a line of hand-felted plush art toys that gets steadily str
   - whispers on idling, scrolling back up, leaving the window, and returning to the tab
   - the watcher: a shadow Muffi that rises from a screen corner only while you are still, and ducks when you approach it
   - the waking: a sticky end sequence where Muffi's eyes open as you scroll
-  - the finale: wait at the very bottom and the lights go out
+  - scroll prompts in every dark section: gentle → passive aggressive → hostile, louder each time the visitor stops
+  - the takeover (`js/takeover.js`): after the waking, the page scrolls for you, accelerating with motion blur through endlessly generated, increasingly corrupted copies of the store. It never reaches the bottom. Any tap, click, key or wheel stops it, and then Muffi's face fills the screen. Reduced-motion visitors skip the forced scroll.
   - return visits remember how deep you went (localStorage)
 
 ## Privacy

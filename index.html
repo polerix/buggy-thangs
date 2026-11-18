@@ -8,6 +8,8 @@
 <meta name="theme-color" content="#f1ebde">
 <meta property="og:title" content="Buggy-Thangs — Small, fuzzy, and very sleepy.">
 <meta property="og:description" content="Hand-felted collectible plush. Series 2 just hatched.">
+<meta property="og:image" content="https://polerix.github.io/buggy-thangs/images/muffi-og.jpg">
+<link rel="preload" as="image" href="images/muffi.webp">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='10' cy='9' r='7' fill='%2386a73f'/%3E%3Ccircle cx='22' cy='8' r='7' fill='%2386a73f'/%3E%3Cpath d='M4 10a6 3 0 0 0 12 0z' fill='%236f8a3a'/%3E%3Cpath d='M16 9a6 3 0 0 0 12 0z' fill='%236f8a3a'/%3E%3Cellipse cx='16' cy='25' rx='13' ry='6' fill='%234e6a2a'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,7 +49,7 @@
       </div>
       <div class="canvas">
         <span class="tag-float">Meet Muffi</span>
-        <div data-thang="muffi" data-open=".18" data-later="2:.5:normal:1|4:1:normal:1:pin"></div>
+        <div data-thang="muffi" data-photo="images/muffi.webp" data-open=".18" data-later="2:.5:normal:1|4:1:normal:1:pin"></div>
       </div>
     </div>
   </section>
@@ -59,7 +61,7 @@
       <p class="lede">Four sleepy little bugs, one shared blueprint. Mossy felted bodies, knit eyestalks, upcycled wings, and real lace-up boots.</p>
       <div class="grid">
         <a class="card" href="shop.html">
-          <div class="canvas"><span class="pill">Flagship</span><div data-thang="muffi" data-open=".16" data-later="3:1:normal:1"></div></div>
+          <div class="canvas"><span class="pill">Flagship</span><div data-thang="muffi" data-photo="images/muffi.webp" data-open=".16" data-later="3:1:normal:1"></div></div>
           <div class="meta"><span class="name">Muffi</span><span class="price">$64</span></div>
           <div class="sub" data-alt="The original. Striped, denim-winged, never actually asleep." data-alt-stage="3">The original. Striped, denim-winged, always half asleep.</div>
         </a>
@@ -127,7 +129,7 @@
       <h2>Some are lighter sleepers.</h2>
       <p class="lede">Each Thang's eyelids are hand-set, so every character settles into its own expression. Here's this week's batch.</p>
       <div class="series">
-        <figure><div class="canvas"><div data-thang="muffi" data-open=".1"></div></div><figcaption><b>Muffi</b>deep sleeper</figcaption></figure>
+        <figure><div class="canvas"><div data-thang="muffi" data-photo="images/muffi.webp" data-open=".1"></div></div><figcaption><b>Muffi</b>deep sleeper</figcaption></figure>
         <figure><div class="canvas"><div data-thang="doza" data-open=".18"></div></div><figcaption><b>Doza</b>deep sleeper</figcaption></figure>
         <figure><div class="canvas"><div data-thang="kroop" data-open=".3"></div></div><figcaption><b>Kroop</b>light sleeper</figcaption></figure>
         <figure><div class="canvas"><div data-thang="pillo" data-open=".45"></div></div><figcaption><b>Pillo</b>dreamer</figcaption></figure>
@@ -181,17 +183,18 @@
   </section>
 
   <!-- ============ STAGE 3: something is here ============ -->
-  <section data-s="3" class="dark" style="--from:#968b78;--bg:#221e1a">
+  <section data-s="3" data-tier="0" class="dark" style="--from:#968b78;--bg:#221e1a">
     <div class="wrap lines">
       <p class="line">It's <span data-fill="day">tonight</span> <span data-fill="part">night</span> in <span data-fill="city">your town</span>.</p>
       <p class="line">You're reading this on <span data-fill="deviceA">a screen</span>.</p>
       <p class="line" data-fill="lightline"></p>
       <p class="line">You've been here for <span data-fill="elapsed">a while</span>. <em>You haven't looked behind you once.</em></p>
       <p class="line" data-fill="visitline"></p>
+      <p class="prompt t0">↓ Keep scrolling. It's nicer further down.</p>
     </div>
   </section>
 
-  <section data-s="3" class="dark" style="--from:#221e1a;--bg:#15120f">
+  <section data-s="3" data-tier="1" class="dark" style="--from:#221e1a;--bg:#15120f">
     <div class="wrap">
       <p class="eyebrow">Customer stories</p>
       <h2>Notes from collectors</h2>
@@ -202,10 +205,11 @@
         <div class="note" style="--r:-1.5deg"><small>Order #20602</small>the eyes were sewn shut. I checked. I CHECKED. please stop sending them.</div>
         <div class="note last" style="--r:-.5deg"><small>Order #—</small>you're the next one on the list. it already knows the way.</div>
       </div>
+      <p class="prompt t1">↓ You can keep reading. Or not. It's not like anyone's waiting on you.</p>
     </div>
   </section>
 
-  <section data-s="3" class="dark" style="--from:#15120f;--bg:#0c0a09">
+  <section data-s="3" data-tier="2" class="dark" style="--from:#15120f;--bg:#0c0a09">
     <div class="wrap">
       <p class="eyebrow">The lineup</p>
       <h2>Meet the Thangs</h2>
@@ -215,11 +219,12 @@
         <div class="card"><div class="canvas" style="filter:saturate(.4) brightness(.62)"><div data-thang="muffi" data-open="1" data-track="1" data-pupil="pin"></div></div><div class="meta"><span class="name">Muffi</span><span class="price">Already home</span></div></div>
         <div class="card"><div class="canvas" style="filter:saturate(.3) brightness(.5)"><div data-thang="muffi" data-open="1" data-track="1" data-pupil="void"></div></div><div class="meta"><span class="name">Muffi</span><span class="price">Behind you</span></div></div>
       </div>
+      <p class="prompt t2">↓ SCROLL DOWN.</p>
     </div>
   </section>
 
   <!-- ============ STAGE 4: it's awake ============ -->
-  <section class="wake" data-s="4">
+  <section class="wake" data-s="4" data-tier="2">
     <div class="wake-stick">
       <div class="wake-face"><div data-thang="muffi" data-mode="horror" data-open=".04" data-track="1" data-view="188 12 192 280"></div></div>
       <div class="wake-lines">
@@ -244,21 +249,11 @@
 
 <div class="watcher right" aria-hidden="true"><div data-thang="muffi" data-mode="shadow" data-open=".9" data-track="1"></div></div>
 
-<div class="blackout" aria-live="polite">
-  <div class="dark-eyes" aria-hidden="true">
-    <svg viewBox="0 0 120 40"><g fill="#d8cbb4"><ellipse cx="28" cy="20" rx="12" ry="9" opacity=".85"/><ellipse cx="92" cy="18" rx="13" ry="10" opacity=".85"/></g><g fill="#000"><circle cx="28" cy="20" r="5.5"/><circle cx="92" cy="18" r="6"/></g><g class="lidc" fill="#000"><rect x="14" y="8" width="28" height="24"/><rect x="77" y="6" width="30" height="26"/></g></svg>
-  </div>
-  <div class="finale-text">
-    <p>You can close the tab now.</p>
-    <p>It doesn't need the tab.</p>
-    <p><a href="index.html">continue shopping</a></p>
-  </div>
-</div>
-
 <div class="vignette" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
 
 <script src="js/muffi.js"></script>
 <script src="js/creep.js"></script>
+<script src="js/takeover.js"></script>
 </body>
 </html>
