@@ -46,6 +46,8 @@
     .replace(/\{device\}/g, device).replace(/\{DEVICE\}/g, device.toUpperCase()).replace(/\{mins\}/g, mins());
 
   /* ============ state ============ */
+  const TOD = window.BT_TOD || { tod: 'afternoon', gFloor: 0, hFloor: 0 };
+
   let H = ss.get('H', 0);                 // brand hostility 0..100
   let demand = ss.get('demand', 1);       // how many items the brand wants right now
   let demandAt = ss.get('demandAt', 0);   // when it starts wanting more
@@ -57,7 +59,7 @@
   function levels() {
     L = H < 18 ? 0 : H < 38 ? 1 : H < 58 ? 2 : H < 80 ? 3 : 4;
     const st = window.BT ? Math.max(0, (window.BT.maxStage || 0) - 1) : 0;
-    G = clamp(Math.floor(Math.max(st, secs() / 60) + gAdds * .5 + gReturn), 0, 4);
+    G = clamp(Math.floor(Math.max(st, secs() / 60, TOD.gFloor) + gAdds * .5 + gReturn), 0, 4);
     body.dataset.hostile = L;
     body.dataset.ghost = G;
   }
@@ -157,13 +159,13 @@
     makeAddButton(name, +price, el, el.closest('section'));
   });
 
-  const CTA = ['Add to cart', 'Add to cart', 'Buy now', 'ADD NOW', 'CONSUME'];
+  const CTA = TOD.tod === '3am' ? ['Let it in', 'Let it in', 'LET IT IN', 'LET IT IN', 'LET IT IN'] : ['Add to cart', 'Add to cart', 'Buy now', 'ADD NOW', 'CONSUME'];
   function labelButtons() { $$('.add-btn:not(.done):not(.ghosted):not([disabled])').forEach(b => { if (b.textContent !== CTA[L]) b.textContent = CTA[L]; }); }
 
   function updatePrices() {
     $$('.price[data-base]').forEach(el => {
       const b = +el.dataset.base, p = priceNow(b);
-      const html = L < 2 ? `$${b}` : `<s>$${b}</s> $${p}${L >= 3 ? ' <small>indecision fee</small>' : ''}`;
+      const html = TOD.tod === '3am' ? 'closed' : L < 2 ? `$${b}` : `<s>$${b}</s> $${p}${L >= 3 ? ' <small>indecision fee</small>' : ''}`;
       if (el.innerHTML !== html) el.innerHTML = html;
     });
   }
@@ -172,7 +174,7 @@
   const bot = document.createElement('div');
   bot.className = 'bot';
   bot.innerHTML = `<div class="bot-panel" aria-live="polite">
-      <div class="bot-head"><span class="av"><img src="images/muffi.webp" alt=""></span><div><b>Buggy-Bot</b><small>Customer happiness</small></div><button class="bot-x" type="button" aria-label="Minimise chat">–</button></div>
+      <div class="bot-head"><span class="av"><img src="images/muffi.webp" alt=""></span><div><b>${TOD.tod === '3am' ? 'Night Shift' : 'Buggy-Bot'}</b><small>${TOD.tod === '3am' ? 'Packing' : 'Customer happiness'}</small></div><button class="bot-x" type="button" aria-label="Minimise chat">–</button></div>
       <div class="bot-log"></div></div>
     <button class="bot-toggle" type="button" aria-label="Open chat"><img src="images/muffi.webp" alt=""><span class="bot-dot"></span></button>`;
   body.appendChild(bot);
@@ -187,6 +189,9 @@
     ['Add to cart.', 'It\'s {time} in {city}. You\'re still here. Your cart is still empty.', 'You can\'t keep taking without giving.', 'The makers need the order. Add to cart.'],
     ['ADD TO CART.', 'YOU DON\'T LEAVE UNTIL THE CART IS FULL.', '{CITY}. {DEVICE}. {time}. WE HAVE EVERYTHING EXCEPT YOUR ORDER.', 'THEY ARE ALREADY FELTING YOURS.']
   ];
+  if (TOD.tod === 'night') LINES[0] = ['Up late? Same. 🐛 The night shift is packing orders right now.', 'Can\'t sleep? Muffi can\'t either.', 'It\'s {time}. Perfect time to treat yourself.'];
+  if (TOD.tod === 'evening') LINES[0] = ['Evening! Winding down? 🐛', 'Move-in week starts soon. Is your shelf ready?', 'Doza is great company on a quiet night.'];
+  if (TOD.tod === '3am') for (let i = 0; i < LINES.length; i++) LINES[i] = ['The bot is asleep. We\'re not.', 'We\'re packing yours now.', 'Don\'t turn on the light.', 'It\'s {time}. Why are you awake?', 'Stay right there. We know the way to {city}.'];
   const GHOST_IN_BOT = ['DON\'T LISTEN TO IT', 'THEY ONLY MAKE MORE IF YOU BUY', 'IT ISN\'T A BOT', 'CLOSE THE CHAT'];
 
   let nextBot = now() + 6000, botCount = ss.get('botCount', 0);
@@ -298,7 +303,11 @@
     setTimeout(() => { flicker(); deface(modal.querySelector('.ck')); }, 2600);
     setTimeout(() => {
       title.textContent = 'Order could not be completed';
-      msg.textContent = pick(['Payment declined. Reason: someone is standing in the doorway.', 'The studio is already working on yours. Please do not pay twice.', 'Your order was cancelled by another account at this address.']);
+      const order = { id: 'BT-' + Math.random().toString(36).slice(2, 8).toUpperCase(), items: cart.map(i => i.name), created: now() };
+      const orders = ls.get('orders', []); orders.push(order); ls.set('orders', orders); ls.set('orderSeen', 0);
+      msg.innerHTML = pick(['Payment declined. Reason: someone is standing in the doorway.', 'The studio is already working on yours. Please do not pay twice.', 'Your order was cancelled by another account at this address.'])
+        + ` <br><br>The studio has started on it anyway. <a href="track.html">Track order ${order.id}</a>`;
+      addTrackLink();
       cart = []; renderCart(); gAdds++;
       H = clamp(H + 25, 0, 100);
       ghostSay(pick(['we took them out.', 'nobody leaves with one.']));
@@ -462,10 +471,40 @@
     if (!announce) return;
     cd -= 1 + L * .75;
     const a = Math.abs(Math.round(cd)), t = `${String(Math.floor(a / 60)).padStart(2, '0')}:${String(a % 60).padStart(2, '0')}`;
-    const html = cd >= 0 ? `Move-in sale ends in <b class="cd">${t}</b> · free shipping on dorm orders`
+    const html = TOD.tod === '3am' ? 'The studio is closed. <b class="cd">The night shift is in.</b>'
+      : TOD.tod === 'night' && cd >= 0 ? `The night shift is packing tonight's orders · sale ends in <b class="cd">${t}</b>`
+      : cd >= 0 ? `Move-in sale ends in <b class="cd">${t}</b> · free shipping on dorm orders`
       : `The sale ended <b class="cd">${t}</b> ago. You hesitated.`;
     if (announce.innerHTML !== html) announce.innerHTML = html;
   }
+
+  /* ============ orders that arrive whether you paid or not ============ */
+  function addTrackLink() {
+    if ($('.nav-links a.track') || !ls.get('orders', []).length) return;
+    const a = document.createElement('a');
+    a.href = 'track.html'; a.className = 'track'; a.textContent = 'Track order';
+    const cartA = $('.nav-links a.cart');
+    if (cartA) cartA.before(a);
+  }
+  addTrackLink();
+  const STATUS_BOT = ['', 'Good news! The studio has started felting your order 🐛', 'Your Thang is settling in at the studio tonight.', 'Your order has shipped! 🐛', 'Your Thang is on its way to {city}.', 'Out for delivery in {city}! Leave a door unlocked.', 'Delivered! 🐛 We left it inside.', 'IT\'S INSIDE.'];
+  const STATUS_AT = [0, 120, 600, 3600, 21600, 72000, 100800, 129600];
+  function orderStatus() {
+    const orders = ls.get('orders', []);
+    if (!orders.length) return;
+    const el = (now() - orders[orders.length - 1].created) / 1000;
+    let idx = 0; STATUS_AT.forEach((at, i) => { if (el >= at) idx = i; });
+    const seen = ls.get('orderSeen', 0);
+    if (idx > seen) {
+      ls.set('orderSeen', idx);
+      if (page !== 'track') {
+        botSay(STATUS_BOT[idx]);
+        if (idx >= 5) setTimeout(() => ghostSay(idx >= 6 ? 'it\'s already inside.' : 'DON\'T OPEN THE DOOR'), 3000);
+      }
+    }
+  }
+  setTimeout(orderStatus, 4000);
+  setInterval(orderStatus, 20000);
 
   /* ============ the clock ============ */
   function tick() {
@@ -476,6 +515,7 @@
     } else {
       H = clamp(H + .6 + .15 * (demand - cart.length), 0, 100);
     }
+    H = Math.max(H, TOD.hFloor);
     levels();
     ss.set('H', H); ss.set('demand', demand); ss.set('demandAt', demandAt); ss.set('gAdds', gAdds); ss.set('cd', cd);
     updatePrices();

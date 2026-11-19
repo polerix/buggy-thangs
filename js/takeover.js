@@ -183,12 +183,13 @@
 
   /* ---------- then it's there ---------- */
   let canDismiss = false;
-  function showIt(firstLine) {
+  function showIt(firstLine, secondLine) {
     const face = stopper.querySelector('.stop-face');
     const host = face.querySelector('[data-thang]');
     if (!host.querySelector('svg')) T.mount(host);
     const lines = Array.from(stopper.querySelectorAll('.stop-lines p'));
     if (firstLine) lines[0].textContent = firstLine;
+    if (secondLine) lines[1].textContent = secondLine;
     lines.forEach(l => l.classList.remove('on'));
     face.classList.remove('on');
     stopper.classList.add('on');
@@ -218,4 +219,5 @@
   });
 
   window.addEventListener('bt:wake', e => { if (e.detail >= .97) start(); });
+  window.BTT = { showIt: (a, b) => { body.classList.add('taking'); showIt(a, b); } };
 })();

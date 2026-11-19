@@ -26,6 +26,14 @@ A marketing site for a line of hand-felted plush art toys that gets steadily str
 - Headlines start in Fraunces and corrode letter by letter into Eater as hostility and ghost activity rise.
 - Flicker safety: never more than 2 flashes in any one second; flicker, roll and tear are off with reduced motion.
 
+## Orders and hours
+- **Order tracker** (`track.html`, `js/track.js`): checkout never succeeds, but every attempt starts an order anyway. It advances in real time across visits: received → felting (2 min) → settling (10 min) → shipped (1 h) → in transit to the visitor's city (6 h) → out for delivery (20 h) → delivered, "left at: inside" (28 h) → "It's inside" (36 h). Buggy-Bot announces each new step when the visitor comes back.
+- **Hours** (`js/night.js`): morning and evening copy changes; after 9 PM the ghosts are active from the start; 3–4 AM the studio is "closed" and the night shift runs the store (silhouette Thangs, "Let it in" buttons, closed prices); at 3:12 AM Muffi wakes up.
+
+### Preview switches
+- `?tod=morning` · `?tod=evening` · `?tod=night` · `?tod=3am` · `?tod=312` on any page
+- `track.html?demo` starts an order without checking out; `track.html?fast` plays the tracker at 600× (an hour every 6 seconds)
+
 ## Privacy
 Nothing leaves the browser. No analytics, no network calls besides Google Fonts. All personal details are read locally and written only into the page.
 
