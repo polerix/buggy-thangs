@@ -534,3 +534,11 @@ body[data-hostile="4"] .bot-toggle { border-color: #e8693f; box-shadow: 0 0 0 3p
 .gift-guide small { color: var(--ink-soft); font-size: .82rem; font-style: italic; }
 #lineup .gift-guide { margin-top: 22px; }
 body[data-hostile="3"] .gift-guide, body[data-hostile="4"] .gift-guide { border-color: #7d1610; }
+
+/* archive photos on the About page */
+.archive { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-top: 30px; margin-bottom: 10px; }
+.archive figure { margin: 0; }
+.archive img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 14px; box-shadow: 0 20px 40px -26px rgba(0,0,0,.6); filter: sepia(.08) contrast(1.02); }
+.archive figcaption { margin-top: 12px; font-size: .92rem; line-height: 1.5; color: var(--ink-soft); }
+.archive figcaption b { color: var(--ink); }
+@media (max-width: 760px) { .archive { grid-template-columns: 1fr; } }

@@ -445,13 +445,13 @@
     if (!el._seen || G < 1) return;
     const v = el.dataset.variants.split('||');
     el._vi = ((el._vi || 0) + 1) % v.length;
-    el.textContent = v[el._vi];
+    el.innerHTML = v[el._vi];
   }), { threshold: 0 }) : null;
   const visitsSeen = ls.get('visitsSeen', 0) + (ss.get('counted', false) ? 0 : 1);
   if (!ss.get('counted', false)) { ls.set('visitsSeen', visitsSeen); ss.set('counted', true); }
   $$('[data-variants]').forEach(el => {
     const v = el.dataset.variants.split('||');
-    if (visitsSeen > 1) { el._vi = (visitsSeen - 1) % v.length; el.textContent = v[el._vi]; }
+    if (visitsSeen > 1) { el._vi = (visitsSeen - 1) % v.length; el.innerHTML = v[el._vi]; }
     if (vio) vio.observe(el);
   });
 
@@ -461,7 +461,7 @@
     levels();
     roll();
     setTimeout(() => ghostSay(pick(['you came back.', 'something is different. look.', 'it moved while you were gone.'])), 500);
-    $$('[data-variants]').forEach(el => { const v = el.dataset.variants.split('||'); el._vi = ((el._vi || 0) + 1) % v.length; el.textContent = v[el._vi]; });
+    $$('[data-variants]').forEach(el => { const v = el.dataset.variants.split('||'); el._vi = ((el._vi || 0) + 1) % v.length; el.innerHTML = v[el._vi]; });
     for (let i = 0; i < 3; i++) defaceSomething();
     const heroImg = $('.hero .photo');
     if (heroImg) {
