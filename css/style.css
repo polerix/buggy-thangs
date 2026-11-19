@@ -559,3 +559,15 @@ img.logo-mark { width: 40px; height: 40px; flex: none; display: block; transitio
   .nav-links a.track, .cart { white-space: nowrap; font-size: .82rem; }
   .cart { padding: 6px 11px; }
 }
+
+/* felted cubes behind the icons */
+.feature .ico, .feature:nth-child(2) .ico, .feature:nth-child(3) .ico {
+  width: 64px; height: 64px; border-radius: 0; color: #fff; font-size: 1.7rem;
+  background: var(--cube) center / contain no-repeat; filter: drop-shadow(0 6px 8px rgba(42,33,24,.22));
+  text-shadow: 0 1px 3px rgba(0,0,0,.35);
+}
+.feature:nth-child(1) .ico { --cube: url(../images/felt/green.webp); }
+.feature:nth-child(2) .ico { --cube: url(../images/felt/orange.webp); }
+.feature:nth-child(3) .ico { --cube: url(../images/felt/blue.webp); }
+.cube-head { display: flex; align-items: center; gap: 14px; }
+.cube-ico { flex: none; width: 54px; height: 54px; display: grid; place-items: center; font-size: 1.45rem; background-position: center; background-size: contain; background-repeat: no-repeat; filter: drop-shadow(0 5px 7px rgba(42,33,24,.22)); text-shadow: 0 1px 3px rgba(0,0,0,.3); }
