@@ -14,6 +14,7 @@
   const H = [
     { n: 'Discordian New Year', m: 1, d: 1, len: 1, gift: 'Kicks off the Discordian New Year with appropriate chaos.', dark: 'Chaos 1. Everything after this is their idea.' },
     { n: 'the Kalends of January', m: 1, d: 1, len: 3, gift: 'A fine Kalends gift. The Romans exchanged presents too.', dark: 'New year. Same Thang. It isn\'t going anywhere.' },
+    { n: 'the Feast of Fools', m: 1, d: 1, len: 1, gift: 'A fine tribute for the Feast of Fools.', dark: 'The Feast of Fools: the fool sits on the throne. Look who\'s on the shelf.' },
     { n: 'Twelfth Night', m: 1, d: 5, len: 1, gift: 'The perfect Twelfth Night surprise.', dark: 'Twelfth Night: the night everything turns upside down. Look up.' },
     { n: 'Perchtennacht', m: 1, d: 5, len: 1, gift: 'Perchta checks whether the house is tidy. Put a Thang on the shelf.', dark: 'Perchta visits houses that were lazy this year. She\'s seen your cart.' },
     { n: 'Mungday', m: 1, d: 5, len: 1, gift: 'Celebrate Mungday with a little navel-gazing and a lot of felt.', dark: 'Hail Eris. She ordered six.' },
@@ -21,22 +22,32 @@
     { n: 'Imbolc', m: 2, d: 1, len: 2, gift: 'A thoughtful token for Imbolc.', dark: 'Brigid\'s crosses keep things out. You don\'t have one.' },
     { n: 'St. Tib\'s Day', m: 2, d: 29, len: 1, leap: true, gift: 'St. Tib\'s Day only comes every four years. So should your order. Order now.', dark: 'A day that isn\'t really there. Neither is the door, tonight.' },
     { n: 'the Equinox of the Gods', m: 3, d: 20, len: 1, gift: 'Ring in the Thelemic New Year with a little hand-felted will.', dark: 'Do what thou wilt. It already has.' },
-    { n: 'Walpurgisnacht', m: 4, d: 30, len: 1, gift: 'An ideal offering for Walpurgisnacht.', dark: 'Hexennacht. The witches are already shopping. They went for the eyes.' },
+    { n: 'Walpurgisnacht', m: 4, d: 30, len: 1, gift: ['An ideal offering for Walpurgisnacht.', 'Makes an excellent offering for Walpurgis Night.', 'Ideal for celebrating the Witches\' Sabbath.'], dark: 'Hexennacht. The witches are already shopping. They went for the eyes.' },
     { n: 'Beltane', m: 5, d: 1, len: 1, gift: 'Brighten up Beltane.', dark: 'Fires on every hill tonight. Don\'t stand too close to the studio.' },
     { n: 'Lughnasadh', m: 8, d: 1, len: 1, gift: 'A harvest-festival treat for Lughnasadh.', dark: 'Harvest time. The studio is harvesting too.' },
-    { n: 'Samhain', m: 10, d: 31, len: 2, gift: 'Makes a great Samhain present.', dark: 'The veil is thin tonight. So is your excuse.' },
+    { n: 'Devil\'s Night', m: 10, d: 30, len: 1, gift: 'Guaranteed to impress at the Devil\'s Night celebration.', dark: 'Devil\'s Night. Lock the door. It doesn\'t use doors.' },
+    { n: 'Samhain', m: 10, d: 31, len: 2, gift: ['Makes a great Samhain present.', 'Suitable for midnight rites at Samhain.'], dark: 'The veil is thin tonight. So is your excuse.' },
     { n: 'Brumalia', m: 11, d: 24, len: 24, gift: 'Brumalia runs for twenty-four days. That\'s twenty-four Thangs.', dark: 'The shortest days are coming. Plenty of dark to deliver in.' },
     { n: 'Krampusnacht', m: 12, d: 5, len: 1, gift: 'The ultimate Krampusnacht stocking-stuffer.', dark: 'Krampus keeps a list. So do we. You\'re on both.' },
     { n: 'Monkey Day', m: 12, d: 14, len: 1, gift: 'Nothing says Monkey Day like a six-legged bug.', dark: 'Happy Monkey Day. Press the button, monkey.' },
     { n: 'Saturnalia', m: 12, d: 17, len: 7, gift: 'Makes a great Saturnalia present.', dark: 'At Saturnalia the masters serve the servants. The Thangs know what day it is.' },
-    { n: 'the Winter Solstice', m: 12, d: 21, len: 1, gift: 'A thoughtful token for the Winter Solstice.', dark: 'The longest night of the year. It has all night.' },
-    { n: 'Yule', m: 12, d: 21, len: 12, gift: 'Perfect for Yule gift-giving.', dark: 'Yule lasts twelve nights. It only needs one.' },
+    { n: 'the Winter Solstice', m: 12, d: 21, len: 1, gift: ['A thoughtful token for the Winter Solstice.', 'A welcome addition to any Solstice vigil.', 'An essential accessory for the Longest Night.'], dark: 'The longest night of the year. It has all night.' },
+    { n: 'Yule', m: 12, d: 21, len: 12, gift: ['Perfect for Yule gift-giving.', 'May appease ancient powers during the winter darkness.'], dark: 'Yule lasts twelve nights. It only needs one.' },
     { n: 'Festivus', m: 12, d: 23, len: 1, gift: 'Guaranteed to delight at Festivus.', dark: 'Airing of grievances: you still haven\'t added anything to your cart.' },
     { n: 'HumanLight', m: 12, d: 23, len: 1, gift: 'A secular, humanist, extremely fuzzy HumanLight gift.', dark: 'Leave a light on for HumanLight. It works better in the dark.' },
     { n: 'the Birthday of the Unconquered Sun', m: 12, d: 25, len: 1, gift: 'Celebrate Dies Natalis Solis Invicti in style.', dark: 'The sun was unconquered. You won\'t be.' },
     { n: 'Wren Day', m: 12, d: 26, len: 1, gift: 'A Wren Day gift that won\'t fly away.', dark: 'On Wren Day they hunted the wren door to door. Guess who\'s doing the hunting now.' }
   ];
 
+  // any day of the year
+  const ANYDAY = [
+    'Perfect for a Black Mass gift exchange.', 'Ideal for celebrating the Witches\' Sabbath.', 'A thoughtful token for the Feast of Hecate.',
+    'Approved by practitioners of the Ars Goetia.', 'Perfect for invoking holiday spirits of questionable provenance.', 'Makes a wonderful gift for your local coven.',
+    'Ideal for moonlit ceremonies and other poor decisions.', 'Popular among necromancers since at least the 14th century.', 'Makes a delightful sacrificial substitute.',
+    'Recommended by three out of four eldritch entities.', 'Perfect for Yule, Samhain, Walpurgisnacht, and other suspicious gatherings.',
+    'A cherished tradition among cults, covens, and secret societies alike.', 'May appease ancient powers during the winter darkness.', 'The gift the Old Ones would have wanted.'
+  ];
+  const pick = a => Array.isArray(a) ? a[(Math.random() * a.length) | 0] : a;
   const DAY = 86400000;
   const isLeap = y => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
   function nextStart(h) {
@@ -64,7 +75,7 @@
   function lines() {
     const L = [[], [], [], [], []];
     if (now) {
-      L[0].push(`Happy ${now.n.replace(/^the /, '')}! 🐛 ${now.gift}`);
+      L[0].push(`Happy ${now.n.replace(/^the /, '')}! 🐛 ${pick(now.gift)}`);
       L[1].push(`It's ${now.n} and you're still browsing.`);
       L[2].push(`Everyone gets a gift for ${now.n.replace(/^the /, '')}. Everyone.`);
       L[3].push(now.dark);
@@ -72,7 +83,8 @@
     }
     if (next) {
       const n = daysTo(next), when = n === 1 ? 'tomorrow' : `in ${n} days`;
-      L[0].push(`${next.gift} ${cap(next.n)} is ${when}. 🐛`, combo);
+      L[0].push(`${pick(next.gift)} ${cap(next.n)} is ${when}. 🐛`, combo, pick(ANYDAY), pick(ANYDAY));
+      L[1].push(pick(ANYDAY) + ' Just saying.');
       L[1].push(`${cap(next.n)} is ${when}. Shipping takes a day and a half. Do the math.`);
       L[2].push(`Everyone gets a gift for ${next.n.replace(/^the /, '')}. Everyone.`);
       L[3].push(next.dark);
@@ -81,14 +93,14 @@
     return L;
   }
 
-  window.BT_HOLIDAYS = { now, next, soon, combo, lines, daysTo };
+  window.BT_HOLIDAYS = { now, next, soon, combo, lines, daysTo, ANYDAY };
 
   /* the gift guide strip, on the shop page and above the home lineup */
   function strip() {
     const el = document.createElement('div');
     el.className = 'gift-guide';
     const head = now ? `Happy ${now.n.replace(/^the /, '')}.` : next ? `${cap(next.n)} is ${daysTo(next) === 1 ? 'tomorrow' : 'in ' + daysTo(next) + ' days'}.` : '';
-    el.innerHTML = `<b>The alternative holiday gift guide</b><span>${head} ${(now || next || {}).gift || ''}</span><small>${combo}</small>`;
+    el.innerHTML = `<b>The alternative holiday gift guide</b><span>${head} ${pick((now || next || {}).gift || '')}</span><small>${Math.random() < .5 ? combo : pick(ANYDAY)}</small>`;
     return el;
   }
   const shopLede = document.querySelector('body[data-page="shop"] .page-hero .lede');

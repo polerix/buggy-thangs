@@ -31,7 +31,7 @@ A marketing site for a line of hand-felted plush art toys that gets steadily str
 - **Hours** (`js/night.js`): morning and evening copy changes; after 9 PM the ghosts are active from the start; 3–4 AM the studio is "closed" and the night shift runs the store (silhouette Thangs, "Let it in" buttons, closed prices); at 3:12 AM Muffi wakes up.
 
 ### Alternative holiday gift guide (`js/holidays.js`)
-23 pagan, occult, alternative and historical celebrations (Saturnalia, Yule, Brumalia, Krampusnacht, Walpurgisnacht, Festivus, St. Tib's Day…). From the visitor's date the site finds what's on now (the most specific one wins) or next, shows a gift-guide strip on the shop and above the home lineup, and feeds Buggy-Bot holiday lines at every hostility level, each with its own dark turn.
+25 pagan, occult, alternative and historical celebrations (Saturnalia, Yule, Brumalia, Krampusnacht, Walpurgisnacht, Festivus, St. Tib's Day, Devil's Night, the Feast of Fools…), plus year-round lines for covens, necromancers and the Old Ones. From the visitor's date the site finds what's on now (the most specific one wins) or next, shows a gift-guide strip on the shop and above the home lineup, and feeds Buggy-Bot holiday lines at every hostility level, each with its own dark turn.
 
 ### Preview switches
 - `?date=2026-12-05` on any page to see the gift guide on another day
