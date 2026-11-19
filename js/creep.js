@@ -118,8 +118,6 @@
 
   function onDeeper(s) {
     if (s > deepest) { deepest = s; store.set('deepest', s); }
-    const cart = $('.cart-count');
-    if (cart) cart.textContent = ['0', '0', '1', '4', '∞'][s] || cart.textContent;
     if (s === 2) setTimeout(() => whisper(pick(W.enter2)), 2500);
     if (s === 3) setTimeout(() => whisper(pick(W.enter3)), 1500);
   }
@@ -393,5 +391,5 @@
   addEventListener('scroll', onScroll, { passive: true });
   addEventListener('resize', onScroll);
   onScroll();
-  window.BT = { whisper, store };
+  window.BT = { whisper, store, get stage() { return stage; }, get maxStage() { return maxStage; } };
 })();

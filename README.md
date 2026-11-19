@@ -20,6 +20,12 @@ A marketing site for a line of hand-felted plush art toys that gets steadily str
   - the takeover (`js/takeover.js`): after the waking, the page scrolls for you, accelerating with motion blur through endlessly generated, increasingly corrupted copies of the store. It never reaches the bottom. Any tap, click, key or wheel stops it, and then Muffi's face fills the screen. Reduced-motion visitors skip the forced scroll.
   - return visits remember how deep you went (localStorage)
 
+## The sale and the ghosts (`js/hostile.js`)
+- **The brand** wants the order. A working cart (persists across pages) and a chat widget, Buggy-Bot. The longer the cart stays empty, the more hostile the brand gets: friendly → pushy → guilt → threatening → hostile. Prices pick up an "indecision fee", the move-in countdown speeds up and runs out, the Add to cart buttons start demanding. Adding to cart calms it for a while; then it wants more.
+- **The ghosts** don't want the makers making more. They scrawl over the pitch in Eater, strike prices, smear photos, pull items out of the cart, dodge or relabel buttons, jam checkout, flicker and roll the screen, rewrite paragraphs between viewings, and punish the Back button.
+- Headlines start in Fraunces and corrode letter by letter into Eater as hostility and ghost activity rise.
+- Flicker safety: never more than 2 flashes in any one second; flicker, roll and tear are off with reduced motion.
+
 ## Privacy
 Nothing leaves the browser. No analytics, no network calls besides Google Fonts. All personal details are read locally and written only into the page.
 
@@ -27,4 +33,4 @@ Nothing leaves the browser. No analytics, no network calls besides Google Fonts.
 `prefers-reduced-motion` disables animation and fades. There is no flashing.
 
 ## Reset
-Clear site data, or run `Object.keys(localStorage).filter(k=>k.startsWith('bt_')).forEach(k=>localStorage.removeItem(k))` in the console.
+Clear site data, or run `[localStorage, sessionStorage].forEach(st => Object.keys(st).filter(k => k.startsWith('bt')).forEach(k => st.removeItem(k)))` in the console.
