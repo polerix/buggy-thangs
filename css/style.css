@@ -461,3 +461,11 @@ body.taking .bot, body.taking .drawer, body.taking .ghost-toast { display: none 
 body[data-hostile="3"] .vignette, body[data-hostile="4"] .vignette { opacity: .7; background: radial-gradient(ellipse at 50% 45%, transparent 30%, rgba(80,6,4,.75) 100%); }
 @media (prefers-reduced-motion: reduce) { .flicker, .rollbar { display: none; } .scrawl { animation: none; } }
 @media (max-width: 720px) { .bot-log { max-height: 140px; } .bot-panel { width: min(290px, calc(100vw - 24px)); } }
+
+/* buttons sit on the bottom of every card, in line across the row (effects can still move them) */
+.grid { align-items: stretch; }
+.card { display: flex; flex-direction: column; }
+.card > .add-btn { margin-top: auto; }
+.card > .add-btn:not(:first-child) { position: relative; }
+.card > :nth-last-child(2) { margin-bottom: 14px; }
+.add-btn[disabled], body[data-hostile] .add-btn[disabled] { opacity: .45; cursor: not-allowed; background: transparent !important; color: var(--ink) !important; border-color: var(--ink) !important; animation: none !important; }

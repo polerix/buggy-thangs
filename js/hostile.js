@@ -143,6 +143,13 @@
     const base = parseFloat(pr.textContent.replace(/[^0-9.]/g, ''));
     if (isNaN(base)) return;
     pr.dataset.base = base;
+    const pill = card.querySelector('.pill');
+    if (pill && /sold out/i.test(pill.textContent)) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'add-btn'; b.disabled = true; b.textContent = 'Sold out';
+      card.appendChild(b);
+      return;
+    }
     makeAddButton(n.textContent.trim(), base, card, card.querySelector('.canvas') || card);
   });
   $$('[data-buy]').forEach(el => {
@@ -150,8 +157,8 @@
     makeAddButton(name, +price, el, el.closest('section'));
   });
 
-  const CTA = ['Add to cart', 'Add to cart', 'Add it to your cart', 'ADD TO CART', 'ADD. IT.'];
-  function labelButtons() { $$('.add-btn:not(.done):not(.ghosted)').forEach(b => { if (b.textContent !== CTA[L]) b.textContent = CTA[L]; }); }
+  const CTA = ['Add to cart', 'Add to cart', 'Buy now', 'ADD NOW', 'CONSUME'];
+  function labelButtons() { $$('.add-btn:not(.done):not(.ghosted):not([disabled])').forEach(b => { if (b.textContent !== CTA[L]) b.textContent = CTA[L]; }); }
 
   function updatePrices() {
     $$('.price[data-base]').forEach(el => {
