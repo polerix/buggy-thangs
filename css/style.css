@@ -499,3 +499,10 @@ body.delivered .page-hero, body.delivered section { --bg: #0c0a09 !important; --
 body.delivered .steps-list p, body.delivered .next-step, body.delivered .lede { color: #b3a792; }
 body.delivered .route-bar { background: #2a2420; }
 @media (max-width: 860px) { .track-grid { grid-template-columns: 1fr; } .track-photo { order: -1; max-width: 420px; } }
+
+/* the eye in the chat */
+.bot-media { padding: 6px; background: #120c0a !important; color: #e8dccb !important; text-transform: none !important; }
+.bot-media .stare { display: block; width: 100%; border-radius: 10px; aspect-ratio: 16 / 9; object-fit: cover; }
+.bot-media span { display: block; padding: 8px 6px 4px; font-weight: 600; }
+.bot-toggle video, .bot-head .av video { width: 100%; height: 100%; object-fit: cover; display: block; }
+body[data-hostile="4"] .bot-toggle { border-color: #e8693f; box-shadow: 0 0 0 3px #7d1610, 0 8px 24px rgba(0,0,0,.4); }

@@ -194,6 +194,33 @@
   if (TOD.tod === '3am') for (let i = 0; i < LINES.length; i++) LINES[i] = ['The bot is asleep. We\'re not.', 'We\'re packing yours now.', 'Don\'t turn on the light.', 'It\'s {time}. Why are you awake?', 'Stay right there. We know the way to {city}.'];
   const GHOST_IN_BOT = ['DON\'T LISTEN TO IT', 'THEY ONLY MAKE MORE IF YOU BUY', 'IT ISN\'T A BOT', 'CLOSE THE CHAT'];
 
+  const EYE_LOOP = 'images/muffi-eye-loop.mp4', EYE_STILL = 'images/muffi-eye.webp';
+  function eyeMedia(cls) {
+    return reduce ? `<img class="${cls}" src="${EYE_STILL}" alt="">`
+      : `<video class="${cls}" src="${EYE_LOOP}" poster="images/muffi-eye-avatar.jpg" autoplay muted loop playsinline></video>`;
+  }
+  function botStare(caption) {
+    const row = document.createElement('div');
+    row.className = 'bot-msg bot-media';
+    row.innerHTML = eyeMedia('stare') + `<span>${fill(caption)}</span>`;
+    log.appendChild(row);
+    while (log.children.length > 6) log.firstElementChild.remove();
+    bot.classList.add('open');
+    setTimeout(() => { log.scrollTop = log.scrollHeight; }, 50);
+    flicker();
+  }
+  // at full hostility the bot stops pretending to be Muffi's photo
+  let eyeAvatar = false;
+  function setAvatar(on) {
+    if (on === eyeAvatar || reduce) return;
+    eyeAvatar = on;
+    const t = bot.querySelector('.bot-toggle'), a = bot.querySelector('.bot-head .av');
+    const tImg = t.querySelector('img, video'), aImg = a.querySelector('img, video');
+    const mkv = () => { const v = document.createElement('video'); v.src = 'images/muffi-eye-avatar.mp4'; v.poster = 'images/muffi-eye-avatar.jpg'; v.muted = true; v.loop = true; v.autoplay = true; v.playsInline = true; v.className = 'eye-av'; return v; };
+    const mki = () => { const i = new Image(); i.src = 'images/muffi.webp'; i.alt = ''; return i; };
+    tImg.replaceWith(on ? mkv() : mki());
+    aImg.replaceWith(on ? mkv() : mki());
+  }
   let nextBot = now() + 6000, botCount = ss.get('botCount', 0);
   function botSay(text, ghost) {
     const row = document.createElement('div');
@@ -311,7 +338,7 @@
       cart = []; renderCart(); gAdds++;
       H = clamp(H + 25, 0, 100);
       ghostSay(pick(['we took them out.', 'nobody leaves with one.']));
-      setTimeout(() => botSay(L < 2 ? 'Hmm, checkout hiccuped! Please try again 🐛' : 'WHAT DID YOU DO.'), 1800);
+      setTimeout(() => { if (L < 2) botSay('Hmm, checkout hiccuped! Please try again 🐛'); else botStare('WHAT DID YOU DO.'); }, 1800);
     }, 4400);
   });
 
@@ -338,17 +365,19 @@
     if (Math.random() < .5) setTimeout(() => pilloFlash(), 100);
   }
   /* the other Pillo: a frame of the close-up cuts in over a product photo, then it's gone */
-  const pilloAlt = new Image(); pilloAlt.src = 'images/pillo-alt.webp';
+  const ALTS = { pillo: 'images/pillo-alt.webp', muffi: 'images/muffi-eye.webp' };
+  Object.values(ALTS).forEach(u => { const i = new Image(); i.src = u; });
   let lastPillo = 0;
   function pilloFlash(force) {
     if (reduce || body.classList.contains('taking') || now() - lastPillo < 4000) return;
     const photos = $$('img.photo').filter(visible);
-    const pool = photos.filter(i => /pillo\.webp/.test(i.src));
+    const pool = photos.filter(i => /(pillo|muffi)\.webp/.test(i.src));
     const cand = (G >= 3 || force) && photos.length ? photos : pool;
     if (!cand.length) return;
     lastPillo = now();
     const img = pick(cand), src = img.src, tf = img.style.transform;
-    img.src = pilloAlt.src; img.style.transform = 'none';
+    const own = /pillo\.webp/.test(src) ? ALTS.pillo : /muffi\.webp/.test(src) ? ALTS.muffi : pick(Object.values(ALTS));
+    img.src = own; img.style.transform = 'none';
     setTimeout(() => { img.src = src; img.style.transform = tf; }, 140 + Math.random() * 90);
   }
   function roll() {
@@ -528,8 +557,10 @@
     if (G >= 1 && Math.random() < (G >= 2 ? .06 + G * .04 : .05) && $$('.scrawl, .smear, .struck').length < G * 6) defaceSomething();
     if (!body.classList.contains('taking') && now() > nextBot) {
       nextBot = now() + [24, 18, 14, 10, 7][L] * 1000 * (.8 + Math.random() * .4);
-      botSay(pick(LINES[L]));
+      if (L >= 3 && Math.random() < .3) botStare(pick(['I see you.', 'Look at me when I\'m talking to you.', 'Still here. Still looking.', 'Add to cart. I\'ll wait.']));
+      else botSay(pick(LINES[L]));
     }
+    setAvatar(L >= 4);
     if (L >= 4) bot.classList.add('open');
     renderCartLight();
   }
@@ -540,5 +571,5 @@
   renderCart();
   updatePrices();
   setInterval(tick, 1000);
-  window.BTH = { age: s => { t0 = now() - s * 1000; }, get H() { return H; }, get L() { return L; }, get G() { return G; }, cart: () => cart, setH: v => { H = v; }, ghostSay, roll, tear, flicker, pilloFlash };
+  window.BTH = { age: s => { t0 = now() - s * 1000; }, get H() { return H; }, get L() { return L; }, get G() { return G; }, cart: () => cart, setH: v => { H = v; }, ghostSay, roll, tear, flicker, pilloFlash, botStare, setAvatar };
 })();
