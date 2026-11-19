@@ -111,6 +111,7 @@
     idleWhispered = false;
     hideWatcher();
     calmNudge();
+    if (inQuietZone()) wbox.classList.remove('on');
     swaps();
     wake();
   }

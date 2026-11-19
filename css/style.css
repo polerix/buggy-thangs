@@ -362,3 +362,4 @@ body.taking .wake-lines { opacity: 0; transition: opacity .6s ease; }
 @media (max-width: 860px) { .doza { grid-template-columns: 1fr; } .doza .canvas { order: -1; } }
 .canvas > [data-thang] { width: 100%; }
 .help-line { margin: 18px 0 0; font-size: .9rem; color: var(--ink-soft); padding: 10px 14px; border-left: 3px solid #8a5cc8; background: rgba(255,255,255,.35); border-radius: 0 10px 10px 0; }
+.help-line b { white-space: nowrap; }

@@ -16,6 +16,8 @@
      tail:  thin (render: tapered rod) | curl (original)
      fur:   shaggy (render: long leaf spikes + hanging fringe) | moss (original)
      legs:  long (render: spindly, body held high) | short (original)
+     Gnarl's render adds: burlap wings with espresso felt trim and stitched veins, a body bound with
+     quilted dark-brown canvas patches and cross-stitch mending, black combat boots, a spike tail.
      Pillo's render adds: iridescent printed wings, a heavier body, soft unwired eyestalks that sag,
      a snout stitched into a frown, and red stitched scars on the legs.
      Doza's render adds the "pre-chewed" set: tattered flannel wings, a frayed curl tail, chewed fur
@@ -37,8 +39,9 @@
                lid: '#ef9878', rim: '#e07f5c', pistils: .08, fat: 1.22, fatX: 1.04, frown: true, scars: true, lidTilt: 20,
                eyePos: [[228, 94], [318, 86]], stalkPaths: ['M262,168Q234,132 228,100', 'M290,172Q322,126 318,92'],
                snout: 'croc',  eyes: 'hood',    wings: 'iris',   boots: 'mid',  tail: 'curl', fur: 'shaggy', legs: 'long' },
-    gnarl:   { name: 'Gnarl',   a: '#3e6a2e', b: '#c6a06a', wing: 'burlap',  trim: '#3a2a1c', boot: '#2e2e2e', iris: '#4a5a2a', seed: 44,
-               snout: 'croc',  eyes: 'classic', wings: 'round',  boots: 'tall', tail: 'thin', fur: 'shaggy', legs: 'long' },
+    gnarl:   { name: 'Gnarl',   a: '#4f6a2c', b: '#c9ad82', wing: 'burlap',  trim: '#3a2418', boot: '#1c1b1a', iris: '#6c7a52', seed: 44,
+               lid: '#7e9d3e', rim: '#e0805e', pistils: .1, mended: true, tongueTip: true,
+               snout: 'croc',  eyes: 'hood',    wings: 'burlap', boots: 'combat', tail: 'spike', fur: 'mended', legs: 'long' },
     bramble: { name: 'Bramble', a: '#1f2b4d', b: '#e2782c', wing: 'faded',   trim: '#e08a3a', boot: '#5b6372', iris: '#6d8084', seed: 55,
                sick: true,
                snout: 'croc',  eyes: 'sore',    wings: 'shrivel', boots: 'mid', tail: 'droop', fur: 'patchy', legs: 'long' }
@@ -72,6 +75,7 @@
       case 'flannel': return `<pattern id="${id}" width="24" height="24" patternUnits="userSpaceOnUse" patternTransform="rotate(12)"><rect width="24" height="24" fill="#a8322c"/><rect width="24" height="8" y="8" fill="#2a1a18" opacity=".55"/><rect width="8" height="24" x="8" fill="#2a1a18" opacity=".55"/><rect width="24" height="1.5" y="3" fill="#e8c9a0" opacity=".5"/><rect width="1.5" height="24" x="3" fill="#e8c9a0" opacity=".5"/></pattern>`;
       case 'cord': return `<pattern id="${id}" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-20)"><rect width="6" height="6" fill="#c9682c"/><rect width="2" height="6" fill="#a4501e"/><rect x="4" width="1" height="6" fill="#e39150"/></pattern>`;
       case 'floral': return `<pattern id="${id}" width="22" height="22" patternUnits="userSpaceOnUse"><rect width="22" height="22" fill="#f1c4cd"/><g fill="#fff" opacity=".8"><circle cx="4" cy="6" r="2.4"/><circle cx="8" cy="6" r="2.4"/><circle cx="6" cy="4" r="2.4"/><circle cx="6" cy="8" r="2.4"/></g><circle cx="6" cy="6" r="1.5" fill="#e3a72e"/><g fill="#8fcfb0"><circle cx="15" cy="16" r="2.2"/><circle cx="19" cy="16" r="2.2"/><circle cx="17" cy="14" r="2.2"/><circle cx="17" cy="18" r="2.2"/></g><circle cx="17" cy="16" r="1.3" fill="#7f56b8"/></pattern>`;
+      case 'burlap': return `<pattern id="${id}" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="4" fill="#cdb48c"/><path d="M0 1h4M0 3h4" stroke="#b49a70" stroke-width=".9"/><path d="M1 0v4M3 0v4" stroke="#a88d63" stroke-width=".7" opacity=".7"/></pattern>`;
       default: return `<pattern id="${id}" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#b89a6a"/><path d="M0 2.5h5M2.5 0v5" stroke="#8f7449" stroke-width="1.2"/></pattern>`;
     }
   }
@@ -212,6 +216,14 @@
     const c = shadow ? '#0c0b0a' : color;
     let scuffs = '';
     if (!shadow) for (let i = 0; i < (style === 'tall' ? 6 : 3); i++) scuffs += `<circle cx="${f(-5 + R() * 20)}" cy="${f((style === 'tall' ? -26 : -2) + R() * (style === 'tall' ? 30 : 6))}" r="${f(.6 + R() * 1.1)}" fill="#fff" opacity=".2"/>`;
+    if (style === 'combat') {
+      return { top: -24, svg: `<g transform="translate(${f(fx)},${f(fy)})">
+        <path d="M-9,-25Q0,-27 9,-25L9,-6Q20,-5 22,1L22,6L-10,6L-10,-6Z" fill="${c}" stroke="#000" stroke-width="1.6" stroke-linejoin="round"/>
+        <ellipse cx="0" cy="-25" rx="9" ry="2.4" fill="#000" opacity=".5"/>
+        ${shadow ? '' : '<path d="M2,-21l6,3M2,-17l6,-3M2,-16l6,3M2,-12l6,-3M2,-11l6,3M2,-7l6,-3" stroke="#8a8378" stroke-width="1.1" stroke-linecap="round"/><g fill="#9b8f78"><circle cx="1.5" cy="-21" r=".9"/><circle cx="1.5" cy="-16" r=".9"/><circle cx="1.5" cy="-11" r=".9"/></g><path d="M-7,-22v14" stroke="#fff" stroke-opacity=".1" stroke-width="2.5"/>'}
+        <rect x="-11.5" y="4.5" width="35" height="4.4" rx="1.6" fill="#0e0d0c"/><path d="M-11,8.6h34" stroke="#3a3632" stroke-width="1" stroke-dasharray="2 1.4"/>${scuffs}
+      </g>` };
+    }
     if (style === 'mid') {
       return { top: -18, svg: `<g transform="translate(${f(fx)},${f(fy)})">
         <path d="M-8,-19Q0,-21 8,-19L8,-5Q19,-5 21,2L21,6L-9,6L-9,-5Z" fill="${c}" stroke="#1d1712" stroke-width="1.6" stroke-linejoin="round"/>
@@ -236,7 +248,7 @@
   }
 
   /* tall, upright leaf-paddle wing (render style) */
-  function paddleWing(id, cx, cy, rx, ry, rot, trim, shadow, sheen) {
+  function paddleWing(id, cx, cy, rx, ry, rot, trim, shadow, sheen, veinColor) {
     let w = `<g transform="rotate(${rot} ${cx} ${cy})">`;
     w += `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#${id}w)" stroke="${trim}" stroke-width="7.5"/>`;
     if (sheen && !shadow) {
@@ -250,7 +262,7 @@
       }
     }
     w += `<ellipse cx="${cx}" cy="${cy}" rx="${rx - 6.5}" ry="${ry - 6.5}" fill="none" stroke="${shadow ? '#000' : sheen ? '#6d48a8' : '#5a3d10'}" stroke-width="1.3" stroke-dasharray="1.6 4.5" opacity=".6"/>`;
-    const vein = shadow ? '#000' : sheen ? '#3d5fa8' : '#1d4d8c';
+    const vein = shadow ? '#000' : veinColor || (sheen ? '#3d5fa8' : '#1d4d8c');
     const top = cy - ry * .86, base = cy + ry * .92;
     w += `<path d="M${cx},${f(base)}Q${cx + 3},${f(cy)} ${cx},${f(top)}" stroke="${vein}" stroke-width="2.2" fill="none"/>`;
     for (let i = 1; i <= 6; i++) {
@@ -386,7 +398,10 @@
     s += `<g filter="url(#${id}f)">`;
     // tail
     const tail = shadow ? '#0c0b0a' : '#e07a2a';
-    if (c.tail === 'fray') {
+    if (c.tail === 'spike') {
+      s += `<path d="M110,198L30,190L110,222Z" fill="${tail}" stroke="${outline}" stroke-width="1.8" stroke-linejoin="round"/>`;
+      if (!shadow) s += `<path d="M104,204L40,192" stroke="#f4a45c" stroke-width="1.6" opacity=".6"/>`;
+    } else if (c.tail === 'fray') {
       s += `<path d="M104,214C72,226 52,206 58,184C63,168 82,170 80,186" fill="none" stroke="${outline}" stroke-width="13.5" stroke-linecap="round"/>`;
       s += `<path d="M104,214C72,226 52,206 58,184C63,168 82,170 80,186" fill="none" stroke="${tail}" stroke-width="10.5" stroke-linecap="round"/>`;
       if (!shadow) {
@@ -414,7 +429,10 @@
 
     // wings
     const trim = shadow ? '#121110' : c.trim;
-    if (c.wings === 'iris') {
+    if (c.wings === 'burlap') {
+      s += paddleWing(id, 142, 100, 36, 66, -22, trim, shadow, false, '#2a1a12');
+      s += paddleWing(id, 184, 94, 38, 70, -6, trim, shadow, false, '#2a1a12');
+    } else if (c.wings === 'iris') {
       s += paddleWing(id, 140, 98, 33, 62, -16, trim, shadow, true);
       s += paddleWing(id, 182, 90, 36, 68, -4, trim, shadow, true);
     } else if (c.wings === 'tatter') {
@@ -458,7 +476,8 @@
     });
 
     // body
-    const shaggy = c.fur === 'shaggy' || c.fur === 'patchy' || c.fur === 'chewed';
+    const shaggy = c.fur === 'shaggy' || c.fur === 'patchy' || c.fur === 'chewed' || c.fur === 'mended';
+    const mended = c.fur === 'mended';
     const chewed = c.fur === 'chewed';
     const patchy = c.fur === 'patchy';
     const BRX = 113 * (c.fatX || 1), BRY = 61 * (c.fat || 1);
@@ -476,6 +495,34 @@
       }
     }
     if (shaggy && !patchy) s += spikes(R, 205, 200, BRX * .87, BRY * .82, 34, shadow, 1);
+    if (mended) {
+      // thick, weathered dark-brown canvas patches, quilted and cross-stitched in place
+      [[150, 214, 34, 26, -8], [262, 210, 30, 24, 6]].forEach(([x, y, rx, ry, rot], k) => {
+        const pid = id + 'pc' + k;
+        const pd = blob(R, x, y, rx, ry, 14, .12);
+        s += `<clipPath id="${pid}"><path d="${pd}"/></clipPath>`;
+        s += `<path d="${pd}" fill="${shadow ? '#100e0d' : '#4b3426'}" stroke="${shadow ? '#000' : '#2c1d14'}" stroke-width="1.5"/>`;
+        if (!shadow) {
+          let q = '';
+          for (let i = -6; i <= 6; i++) {
+            q += `<path d="M${x + i * 9 - 40},${y - 40}l80,80M${x + i * 9 + 40},${y - 40}l-80,80" stroke="#6a4c38" stroke-width="1" opacity=".7"/>`;
+          }
+          s += `<g clip-path="url(#${pid})" transform="rotate(${rot} ${x} ${y})">${q}</g>`;
+          s += `<path d="${blob(R, x - rx * .25, y - ry * .3, rx * .5, ry * .35, 10, .3)}" fill="#fff" opacity=".05"/>`;
+          // heavy cross-stitch mending round the edge
+          for (let i = 0; i < 16; i++) {
+            const a = i / 16 * Math.PI * 2, ex = x + Math.cos(a) * rx * .96, ey = y + Math.sin(a) * ry * .96;
+            s += `<path d="M${f(ex - 3)},${f(ey - 3)}l6,6M${f(ex + 3)},${f(ey - 3)}l-6,6" stroke="#cdb48c" stroke-width="1.3" stroke-linecap="round"/>`;
+          }
+        }
+      });
+      // moss tufts and knobbly bud nubs growing back over the patch edges
+      if (!shadow) for (let i = 0; i < 22; i++) {
+        const t = R() * Math.PI * 2, u = .2 + R() * .7;
+        const x = 205 + Math.cos(t) * BRX * u, y = 205 + Math.sin(t) * BRY * u;
+        s += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(3 + R() * 2.5)}" fill="${GREENS[(R() * GREENS.length) | 0]}" stroke="#3f5a1f" stroke-width=".8"/>`;
+      }
+    }
     if (chewed) {
       // torn felt where the dog got through: red wool wounds with ragged edges
       [[270, 178, 20, 14], [166, 214, 15, 11], [236, 222, 13, 9], [112, 204, 11, 8]].forEach(([x, y, rx, ry]) => {
