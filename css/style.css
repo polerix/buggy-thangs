@@ -350,3 +350,11 @@ body.taking { overflow-anchor: none; }
 
 body.taking .wake-lines { opacity: 0; transition: opacity .6s ease; }
 @media (orientation: portrait) { .stop-face { width: 150vw; top: 33%; } }
+
+/* ---------- Meet Bramble ---------- */
+.bramble { display: grid; grid-template-columns: 1fr 1.15fr; gap: 48px; align-items: center; }
+.bramble .canvas { aspect-ratio: 1; display: grid; place-items: end center; }
+.bramble-list { list-style: none; padding: 0; margin: 22px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.bramble-list li { padding: 6px 12px; border-radius: 99px; background: #e4dccb; font-size: .88rem; }
+.bramble-list li:last-child { background: #e2782c; color: #fff; }
+@media (max-width: 860px) { .bramble { grid-template-columns: 1fr; } }
