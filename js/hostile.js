@@ -326,6 +326,21 @@
       flashes.push(t + i * 160);
       setTimeout(() => flick.animate([{ opacity: 0 }, { opacity: .82 }, { opacity: 0 }], { duration: 90 }), i * 160);
     }
+    if (Math.random() < .5) setTimeout(() => pilloFlash(), 100);
+  }
+  /* the other Pillo: a frame of the close-up cuts in over a product photo, then it's gone */
+  const pilloAlt = new Image(); pilloAlt.src = 'images/pillo-alt.webp';
+  let lastPillo = 0;
+  function pilloFlash(force) {
+    if (reduce || body.classList.contains('taking') || now() - lastPillo < 4000) return;
+    const photos = $$('img.photo').filter(visible);
+    const pool = photos.filter(i => /pillo\.webp/.test(i.src));
+    const cand = (G >= 3 || force) && photos.length ? photos : pool;
+    if (!cand.length) return;
+    lastPillo = now();
+    const img = pick(cand), src = img.src, tf = img.style.transform;
+    img.src = pilloAlt.src; img.style.transform = 'none';
+    setTimeout(() => { img.src = src; img.style.transform = tf; }, 140 + Math.random() * 90);
   }
   function roll() {
     if (reduce || body.classList.contains('taking')) return;
@@ -469,6 +484,7 @@
     eat();
     breakTick();
     maybeTrap();
+    if (Math.random() < (G >= 1 ? .03 + G * .015 : .008)) pilloFlash();
     if (G >= 1 && Math.random() < (G >= 2 ? .06 + G * .04 : .05) && $$('.scrawl, .smear, .struck').length < G * 6) defaceSomething();
     if (!body.classList.contains('taking') && now() > nextBot) {
       nextBot = now() + [24, 18, 14, 10, 7][L] * 1000 * (.8 + Math.random() * .4);
@@ -484,5 +500,5 @@
   renderCart();
   updatePrices();
   setInterval(tick, 1000);
-  window.BTH = { age: s => { t0 = now() - s * 1000; }, get H() { return H; }, get L() { return L; }, get G() { return G; }, cart: () => cart, setH: v => { H = v; }, ghostSay, roll, tear, flicker };
+  window.BTH = { age: s => { t0 = now() - s * 1000; }, get H() { return H; }, get L() { return L; }, get G() { return G; }, cart: () => cart, setH: v => { H = v; }, ghostSay, roll, tear, flicker, pilloFlash };
 })();
