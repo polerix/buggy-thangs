@@ -34,6 +34,22 @@ A marketing site for a line of hand-felted plush art toys that gets steadily str
 - `?tod=morning` · `?tod=evening` · `?tod=night` · `?tod=3am` · `?tod=312` on any page
 - `track.html?demo` starts an order without checking out; `track.html?fast` plays the tracker at 600× (an hour every 6 seconds)
 
+## Inside the studio (About page film, `js/film.js`)
+Eight scene clips in `video/scenes/`, cut from three source films (nice fabrication, frustrated fabrication, narration with a hard cut to the factory):
+
+| Clip | Source | Scene |
+|---|---|---|
+| 01-hall | narration 0–5.1 s | Sunlit parish-hall studio; narration "Today the studio is an old parish hall outside town…" (clean stop at 3.72 s after "town,") |
+| 02-factory | narration 5.1–10 s | Dark factory, worker shuts the door; narration ends "…a wall of wool." |
+| 03-wide | nice 0–3 s | Two felters at the table |
+| 04-felting | nice 3–6 s | Hands felting an eye |
+| 05-tea | nice 6–8.8 s | Tea, placing a Thang |
+| 06-lineup | nice 8.8–10 s | Proud lineup of finished Thangs |
+| 07-fray | frustrated 10–13.6 s | Irritation sets in |
+| 08-alive | frustrated 13.6–20 s | The Thangs come alive; one flies at the camera |
+
+The player assembles a cut live: 0 brand film → 1 a frame of the factory slips in and they fray → 2 they come alive → 3 the narration runs into the factory. The cut depends on hostility, ghosts, depth and the hour, and each rewatch is one cut worse.
+
 ## Privacy
 Nothing leaves the browser. No analytics, no network calls besides Google Fonts. All personal details are read locally and written only into the page.
 

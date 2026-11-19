@@ -506,3 +506,23 @@ body.delivered .route-bar { background: #2a2420; }
 .bot-media span { display: block; padding: 8px 6px 4px; font-weight: 600; }
 .bot-toggle video, .bot-head .av video { width: 100%; height: 100%; object-fit: cover; display: block; }
 body[data-hostile="4"] .bot-toggle { border-color: #e8693f; box-shadow: 0 0 0 3px #7d1610, 0 8px 24px rgba(0,0,0,.4); }
+
+/* =================== Inside the studio (film) =================== */
+.film { margin-top: 36px; max-width: 900px; }
+.film-frame { position: relative; aspect-ratio: 16 / 9; border-radius: 18px; overflow: hidden; background: #0b0908; box-shadow: 0 30px 60px -30px rgba(0,0,0,.6); cursor: pointer; }
+.film-frame .fv, .film-poster, .film-flash { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.film-frame .fv { opacity: 0; }
+.film-frame .fv.on { opacity: 1; }
+.film-flash { opacity: 0; pointer-events: none; z-index: 3; }
+.film-flash.on { opacity: 1; }
+.film-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 4; display: flex; align-items: center; gap: 12px; padding: 16px 26px; border-radius: 99px; border: 0; background: rgba(241,235,222,.94); color: var(--ink); font-weight: 700; font-size: 1rem; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+.film-play span { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--moss); color: #fff; font-size: .8rem; }
+.film-card { position: absolute; inset: 0; z-index: 4; display: grid; place-content: center; justify-items: center; gap: 18px; text-align: center; background: rgba(241,235,222,.92); padding: 20px; }
+.film-card[hidden] { display: none; }
+.film-card p { margin: 0; font-family: var(--display); font-size: clamp(1.4rem, 3.4vw, 2.2rem); font-weight: 700; color: var(--ink); }
+.film-card.dark { background: rgba(5,4,4,.9); }
+.film-card.dark p { font-family: var(--eater); font-weight: 400; color: #c2412e; }
+.film-card.dark .btn { color: #e4d9c6; border-color: #e4d9c6; }
+.film-cap { font-size: .85rem; color: var(--ink-soft); margin-top: 10px; }
+.film-frame.glitch .fv.on { filter: url(#bt-tear) hue-rotate(40deg) contrast(1.3); transform: translateX(6px); }
+.film-frame [hidden] { display: none !important; }
