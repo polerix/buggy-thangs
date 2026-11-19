@@ -183,11 +183,11 @@
   bot.querySelector('.bot-x').addEventListener('click', () => { if (L < 4) bot.classList.remove('open'); });
 
   const LINES = [
-    ['Hi! 👋 Moving out soon? A Thang makes any dorm feel like home.', 'Psst: Series 2 is going fast. Move-in week always sells out.', 'Need help picking? Kroop is great with roommates.', 'First apartment? Muffi looks amazing on a windowsill.'],
-    ['Still browsing? Move-in day doesn\'t wait.', 'Your roommate already ordered one.', 'You\'ve been here {mins}. Just add it.', 'Free shipping ends when you leave this page.'],
-    ['Tuition is forty thousand dollars. Muffi is sixty-four. Do the math.', 'Everyone on your floor has a Thang. Don\'t be the one who doesn\'t.', 'We noticed you haven\'t added anything. We notice everything.', 'Your parents would want you to have one.'],
-    ['Add to cart.', 'It\'s {time} in {city}. You\'re still here. Your cart is still empty.', 'You can\'t keep taking without giving.', 'The makers need the order. Add to cart.'],
-    ['ADD TO CART.', 'YOU DON\'T LEAVE UNTIL THE CART IS FULL.', '{CITY}. {DEVICE}. {time}. WE HAVE EVERYTHING EXCEPT YOUR ORDER.', 'THEY ARE ALREADY FELTING YOURS.']
+    ['Muffi makes a great Saturnalia present. 🐛', 'Thangs make great Saturnalia gifts.', 'Hi! 👋 Moving out soon? A Thang makes any dorm feel like home.', 'Psst: Series 2 is going fast. Move-in week always sells out.', 'Need help picking? Kroop is great with roommates.', 'First apartment? Muffi looks amazing on a windowsill.'],
+    ['Still browsing? Move-in day doesn\'t wait.', 'These make great Saturnalia presents. Saturnalia doesn\'t wait either.', 'Your roommate already ordered one.', 'You\'ve been here {mins}. Just add it.', 'Free shipping ends when you leave this page.'],
+    ['Everyone gets a gift at Saturnalia. Everyone.', 'Tuition is forty thousand dollars. Muffi is sixty-four. Do the math.', 'Everyone on your floor has a Thang. Don\'t be the one who doesn\'t.', 'We noticed you haven\'t added anything. We notice everything.', 'Your parents would want you to have one.'],
+    ['At Saturnalia the masters serve the servants. The Thangs know what day it is.', 'Add to cart.', 'It\'s {time} in {city}. You\'re still here. Your cart is still empty.', 'You can\'t keep taking without giving.', 'The makers need the order. Add to cart.'],
+    ['IT\'S SATURNALIA. THEY\'RE IN CHARGE NOW.', 'ADD TO CART.', 'YOU DON\'T LEAVE UNTIL THE CART IS FULL.', '{CITY}. {DEVICE}. {time}. WE HAVE EVERYTHING EXCEPT YOUR ORDER.', 'THEY ARE ALREADY FELTING YOURS.']
   ];
   if (TOD.tod === 'night') LINES[0] = ['Up late? Same. 🐛 The night shift is packing orders right now.', 'Can\'t sleep? Muffi can\'t either.', 'It\'s {time}. Perfect time to treat yourself.'];
   if (TOD.tod === 'evening') LINES[0] = ['Evening! Winding down? 🐛', 'Move-in week starts soon. Is your shelf ready?', 'Doza is great company on a quiet night.'];
