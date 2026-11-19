@@ -15,14 +15,17 @@
      boots: tall (render: tall suede boots) | low (original lace-ups)
      tail:  thin (render: tapered rod) | curl (original)
      fur:   shaggy (render: long leaf spikes + hanging fringe) | moss (original)
-     legs:  long (render: spindly, body held high) | short (original) */
+     legs:  long (render: spindly, body held high) | short (original)
+     Kroop's render adds: fan wings (rounded upright, veins fanning from the base), mid boots
+     (ankle lace-ups), a taper tail (thick, tapered), peach eyelids, and orange pistil flecks. */
   const CHARS = {
     muffi:   { name: 'Muffi',   a: '#c43a2a', b: '#f0b62e', wing: 'mesh',    trim: '#d9a62e', boot: '#3a62a6', iris: '#6f8798', seed: 7,
                snout: 'croc',  eyes: 'hood',    wings: 'paddle', boots: 'tall', tail: 'thin', fur: 'shaggy', legs: 'long' },
     doza:    { name: 'Doza',    a: '#5b3a8f', b: '#41b3a3', wing: 'flannel', trim: '#ece4c8', boot: '#6e4528', iris: '#5b3a1b', seed: 13,
                snout: 'round', eyes: 'classic', wings: 'paddle', boots: 'low',  tail: 'curl', fur: 'shaggy' },
-    kroop:   { name: 'Kroop',   a: '#1e1d1b', b: '#ece8dc', wing: 'cord',    trim: '#d4462e', boot: '#a3312a', iris: '#7a7a2e', seed: 21,
-               snout: 'croc',  eyes: 'hood',    wings: 'round',  boots: 'tall', tail: 'thin', fur: 'moss' },
+    kroop:   { name: 'Kroop',   a: '#1b1a19', b: '#f1eee6', wing: 'cord',    trim: '#c43c22', boot: '#a8302a', iris: '#7d919b', seed: 21,
+               lid: '#f2a07c', rim: '#e8784a', pistils: .16,
+               snout: 'croc',  eyes: 'hood',    wings: 'fan',    boots: 'mid',  tail: 'taper', fur: 'shaggy', legs: 'long' },
     pillo:   { name: 'Pillo',   a: '#ec8db0', b: '#97dcbe', wing: 'floral',  trim: '#7f56b8', boot: '#dcae34', iris: '#6a4f8f', seed: 33,
                snout: 'round', eyes: 'hood',    wings: 'paddle', boots: 'low',  tail: 'curl', fur: 'moss', legs: 'long' },
     gnarl:   { name: 'Gnarl',   a: '#3e6a2e', b: '#c6a06a', wing: 'burlap',  trim: '#3a2a1c', boot: '#2e2e2e', iris: '#4a5a2a', seed: 44,
@@ -76,14 +79,15 @@
     return d + 'Z';
   }
 
-  function fur(R, cx, cy, rx, ry, count, shadow) {
+  function fur(R, cx, cy, rx, ry, count, shadow, pistils) {
+    const pp = pistils || .045;
     let s = '';
     for (let i = 0; i < count; i++) {
       const t = R() * Math.PI * 2, u = Math.sqrt(R());
       const x = cx + Math.cos(t) * rx * u * .98, y = cy + Math.sin(t) * ry * u * .98;
       const a = t + (R() - .5) * 1.5;
       const len = u > .85 ? 8 + R() * 10 : 4 + R() * 7;
-      const col = shadow ? (R() < .5 ? '#0a0909' : '#151311') : (R() < .045 ? '#c98a3a' : GREENS[(R() * GREENS.length) | 0]);
+      const col = shadow ? (R() < .5 ? '#0a0909' : '#151311') : (R() < pp ? '#d9692e' : GREENS[(R() * GREENS.length) | 0]);
       s += `<path d="M${f(x)},${f(y)}l${f(Math.cos(a) * len)},${f(Math.sin(a) * len)}" stroke="${col}" stroke-width="${f(1.5 + R() * 1.7)}"/>`;
     }
     for (let i = 0; i < 18; i++) {
@@ -196,6 +200,14 @@
     const c = shadow ? '#0c0b0a' : color;
     let scuffs = '';
     if (!shadow) for (let i = 0; i < (style === 'tall' ? 6 : 3); i++) scuffs += `<circle cx="${f(-5 + R() * 20)}" cy="${f((style === 'tall' ? -26 : -2) + R() * (style === 'tall' ? 30 : 6))}" r="${f(.6 + R() * 1.1)}" fill="#fff" opacity=".2"/>`;
+    if (style === 'mid') {
+      return { top: -18, svg: `<g transform="translate(${f(fx)},${f(fy)})">
+        <path d="M-8,-19Q0,-21 8,-19L8,-5Q19,-5 21,2L21,6L-9,6L-9,-5Z" fill="${c}" stroke="#1d1712" stroke-width="1.6" stroke-linejoin="round"/>
+        <ellipse cx="0" cy="-19" rx="8" ry="2.4" fill="#000" opacity=".35"/>
+        ${shadow ? '' : '<path d="M1,-16l6,3M1,-12l6,-3M1,-11l6,3M1,-7l6,-3M2,-6l6,3" stroke="#111" stroke-width="1.3" stroke-linecap="round"/><path d="M-6,-16v10" stroke="#fff" stroke-opacity=".16" stroke-width="2.5"/>'}
+        <rect x="-10.5" y="5" width="33" height="3.6" rx="1.6" fill="#1a1512"/>${scuffs}
+      </g>` };
+    }
     if (style === 'tall') {
       return { top: -28, svg: `<g transform="translate(${f(fx)},${f(fy)})">
         <path d="M-7.5,-30Q0,-32 7.5,-30L7,-5Q18,-4 19,3L19,6L-8.5,6L-8,-5Z" fill="${c}" stroke="#1d1712" stroke-width="1.6" stroke-linejoin="round"/>
@@ -228,6 +240,25 @@
     return w + '</g>';
   }
 
+  /* rounded upright wing with veins fanning out from the base (Kroop render) */
+  function fanWing(id, cx, cy, rx, ry, rot, trim, shadow) {
+    let w = `<g transform="rotate(${rot} ${cx} ${cy})">`;
+    w += `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#${id}w)" stroke="${trim}" stroke-width="9"/>`;
+    w += `<ellipse cx="${cx}" cy="${cy}" rx="${rx - 7}" ry="${ry - 7}" fill="none" stroke="${shadow ? '#000' : '#5a1d0e'}" stroke-width="1.2" stroke-dasharray="1.6 4.5" opacity=".55"/>`;
+    const vein = shadow ? '#000' : '#2a1a14';
+    const bx = cx + rx * .55, by = cy + ry * .75;
+    for (let i = 0; i < 7; i++) {
+      const a = Math.PI * (1.02 + i * .095);
+      const ex = cx + Math.cos(a) * rx * .9, ey = cy + Math.sin(a) * ry * .9;
+      w += `<path d="M${f(bx)},${f(by)}Q${f((bx + ex) / 2 + 4)},${f((by + ey) / 2 + 4)} ${f(ex)},${f(ey)}" stroke="${vein}" stroke-width="1.5" fill="none" stroke-dasharray="5 2"/>`;
+    }
+    // cross-stitches between veins
+    for (let k = 1; k <= 2; k++) {
+      w += `<ellipse cx="${f(bx)}" cy="${f(by)}" rx="${f(rx * .55 * k)}" ry="${f(ry * .5 * k)}" fill="none" stroke="${vein}" stroke-width="1" stroke-dasharray="3 3" opacity=".55" clip-path="none"/>`;
+    }
+    return w + '</g>';
+  }
+
   function roundWing(id, cx, cy, rx, ry, rot, trim, shadow) {
     let w = `<g transform="rotate(${rot} ${cx} ${cy})">`;
     w += `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#${id}w)" stroke="${trim}" stroke-width="7"/>`;
@@ -248,7 +279,7 @@
     const horror = mode === 'horror';
     const E = Object.assign({}, EYE[mode] || EYE.normal);
     if (!E.iris) E.iris = c.iris;
-    if (c.eyes === 'hood' && !E.veins && !shadow) { E.ir = 9.6; E.lid = '#78993a'; }
+    if (c.eyes === 'hood' && !E.veins && !shadow) { E.ir = 9.6; E.lid = c.lid || '#78993a'; if (c.rim) E.rim = c.rim; }
     if (opts.pupil === 'pin') { E.pr = 1.5; }
     if (opts.pupil === 'void') { E.pr = E.ir - .4; E.iris = '#120806'; }
     const open = opts.open == null ? .22 : +opts.open;
@@ -276,7 +307,10 @@
     s += `<g filter="url(#${id}f)">`;
     // tail
     const tail = shadow ? '#0c0b0a' : '#e07a2a';
-    if (c.tail === 'thin') {
+    if (c.tail === 'taper') {
+      s += `<path d="M108,196Q76,190 48,170Q36,162 34,172Q40,192 74,208Q92,216 108,224Z" fill="${tail}" stroke="${outline}" stroke-width="2" stroke-linejoin="round"/>`;
+      if (!shadow) s += `<path d="M100,202Q72,194 46,174" stroke="#f4a45c" stroke-width="2.2" fill="none" opacity=".6"/>`;
+    } else if (c.tail === 'thin') {
       s += `<path d="M106,203Q72,196 34,180Q70,205 106,219Z" fill="${tail}" stroke="${outline}" stroke-width="1.8" stroke-linejoin="round"/>`;
       if (!shadow) s += `<path d="M100,207Q72,200 44,186" stroke="#f4a45c" stroke-width="1.6" fill="none" opacity=".7"/>`;
     } else {
@@ -287,7 +321,10 @@
 
     // wings
     const trim = shadow ? '#121110' : c.trim;
-    if (c.wings === 'paddle') {
+    if (c.wings === 'fan') {
+      s += fanWing(id, 182, 104, 46, 54, 4, trim, shadow);
+      s += fanWing(id, 132, 112, 52, 58, -16, trim, shadow);
+    } else if (c.wings === 'paddle') {
       s += paddleWing(id, 140, 96, 33, 66, -24, trim, shadow);
       s += paddleWing(id, 178, 88, 36, 72, -9, trim, shadow);
     } else {
@@ -316,7 +353,15 @@
     const bodyD = blob(R, 205, 205, 113, 61, 30, .14);
     s += `<path d="${bodyD}" fill="${shadow ? '#0b0a09' : '#4e6a2a'}"/>`;
     s += `<path d="${bodyD}" fill="url(#${id}g)"/>`;
-    s += fur(R, 205, 205, 113, 61, shaggy ? 300 : 360, shadow);
+    s += fur(R, 205, 205, 113, 61, shaggy ? 300 : 360, shadow, c.pistils);
+    if (c.pistils && !shadow) {
+      // orange pistil flecks tucked into the fur
+      for (let i = 0; i < 38; i++) {
+        const t = R() * Math.PI * 2, u = Math.sqrt(R()) * .92;
+        const x = 205 + Math.cos(t) * 113 * u, y = 205 + Math.sin(t) * 61 * u, a = R() * Math.PI * 2;
+        s += `<path d="M${f(x)},${f(y)}l${f(Math.cos(a) * 5)},${f(Math.sin(a) * 5)}" stroke="#e0682a" stroke-width="2.6" stroke-linecap="round"/>`;
+      }
+    }
     if (shaggy) s += spikes(R, 205, 200, 98, 50, 34, shadow, 1);
     s += `<ellipse cx="205" cy="232" rx="105" ry="32" fill="#000" opacity="${shadow ? .3 : .14}"/>`;
 
