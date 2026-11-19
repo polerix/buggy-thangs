@@ -4,7 +4,7 @@ A marketing site for a line of hand-felted plush art toys that gets steadily str
 
 **Muffi render:** `images/muffi.webp` is used for every Muffi before its eyes start moving; from then on the code-drawn plush takes over.
 
-**Pages:** `index.html` (full descent), `shop.html`, `care.html`, `about.html`, `404.html`.
+**Pages:** `index.html` (full descent), `shop.html`, `care.html`, `studio.html`, `about.html`, `track.html`, `404.html`.
 
 ## How it works
 - `js/muffi.js` draws every Thang procedurally as SVG from swappable parts (snout, eyes, wings, boots, tail, fur, legs). Muffi uses the render set that matches the studio photo; the rest of the line mixes render parts with the original ones.
@@ -38,7 +38,7 @@ A marketing site for a line of hand-felted plush art toys that gets steadily str
 - `?tod=morning` · `?tod=evening` · `?tod=night` · `?tod=3am` · `?tod=312` on any page
 - `track.html?demo` starts an order without checking out; `track.html?fast` plays the tracker at 600× (an hour every 6 seconds)
 
-## Inside the studio (About page film, `js/film.js`)
+## Inside the studio (Studio page film, `js/film.js`)
 Eight scene clips in `video/scenes/`, cut from three source films (nice fabrication, frustrated fabrication, narration with a hard cut to the factory):
 
 | Clip | Source | Scene |
