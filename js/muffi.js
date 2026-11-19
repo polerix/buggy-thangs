@@ -16,6 +16,8 @@
      tail:  thin (render: tapered rod) | curl (original)
      fur:   shaggy (render: long leaf spikes + hanging fringe) | moss (original)
      legs:  long (render: spindly, body held high) | short (original)
+     Doza's render adds the "pre-chewed" set: tattered flannel wings, a frayed curl tail, chewed fur
+     with torn felt wounds, yarn guts and a bone stuck in it, slobber, and one eye drooping shut.
      Bramble's render adds the "under the weather" set: patchy fur with irritated skin, sore
      teary eyes, shrivelled wings, a drooping frayed tail, and clear drips at the lips.
      Kroop's render adds: fan wings (rounded upright, veins fanning from the base), mid boots
@@ -23,8 +25,9 @@
   const CHARS = {
     muffi:   { name: 'Muffi',   a: '#c43a2a', b: '#f0b62e', wing: 'mesh',    trim: '#d9a62e', boot: '#3a62a6', iris: '#6f8798', seed: 7,
                snout: 'croc',  eyes: 'hood',    wings: 'paddle', boots: 'tall', tail: 'thin', fur: 'shaggy', legs: 'long' },
-    doza:    { name: 'Doza',    a: '#5b3a8f', b: '#41b3a3', wing: 'flannel', trim: '#ece4c8', boot: '#6e4528', iris: '#5b3a1b', seed: 13,
-               snout: 'round', eyes: 'classic', wings: 'paddle', boots: 'low',  tail: 'curl', fur: 'shaggy' },
+    doza:    { name: 'Doza',    a: '#6a3f96', b: '#2fa39a', wing: 'flannel', trim: '#9e2a2a', boot: '#5e3d26', iris: '#7d8a8f', seed: 13,
+               chewed: true, slobber: true, lipColor: '#d7788a', eyeSkew: [0, -.5], lid: '#78993a', rim: '#5d7c2c',
+               snout: 'croc',  eyes: 'hood',    wings: 'tatter', boots: 'mid',  tail: 'fray', fur: 'chewed', legs: 'long' },
     kroop:   { name: 'Kroop',   a: '#1b1a19', b: '#f1eee6', wing: 'cord',    trim: '#c43c22', boot: '#a8302a', iris: '#7d919b', seed: 21,
                lid: '#f2a07c', rim: '#e8784a', pistils: .16,
                snout: 'croc',  eyes: 'hood',    wings: 'fan',    boots: 'mid',  tail: 'taper', fur: 'shaggy', legs: 'long' },
@@ -244,6 +247,30 @@
     return w + '</g>';
   }
 
+  /* chewed flannel wing: ragged bitten edge, tooth holes, loose threads (Doza render) */
+  function tatterWing(id, R, cx, cy, rx, ry, rot, trim, shadow) {
+    const d = blob(R, cx, cy, rx, ry, 26, .16);
+    let w = `<g transform="rotate(${rot} ${cx} ${cy})">`;
+    w += `<path d="${d}" fill="url(#${id}w)" stroke="${trim}" stroke-width="4" stroke-linejoin="round"/>`;
+    if (!shadow) {
+      // bite marks: notches out of the edge, and torn holes
+      for (let i = 0; i < 4; i++) {
+        const a = R() * Math.PI * 2, x = cx + Math.cos(a) * rx * .95, y = cy + Math.sin(a) * ry * .95;
+        w += `<path d="M${f(x - 6)},${f(y)}q6,${f(-8 + R() * 3)} 12,0q-3,6 -6,7q-3,-1 -6,-7z" fill="#ece5d6" stroke="#e9dcc8" stroke-width="1"/>`;
+      }
+      for (let i = 0; i < 3; i++) {
+        const x = cx + (R() - .5) * rx, y = cy + (R() - .5) * ry * 1.2;
+        w += `<path d="${blob(R, x, y, 3 + R() * 4, 3 + R() * 5, 8, .5)}" fill="#2a1513" stroke="#c8b9a0" stroke-width=".8"/>`;
+      }
+      for (let i = 0; i < 9; i++) {
+        const a = R() * Math.PI * 2, x = cx + Math.cos(a) * rx, y = cy + Math.sin(a) * ry;
+        w += `<path d="M${f(x)},${f(y)}q${f(Math.cos(a) * 5 + (R() - .5) * 6)},${f(Math.sin(a) * 5)} ${f(Math.cos(a) * 11)},${f(Math.sin(a) * 11 + 5)}" stroke="#ead8c4" stroke-width=".9" fill="none"/>`;
+      }
+      w += `<path d="M${cx},${f(cy + ry * .9)}Q${cx - 2},${f(cy)} ${cx + 1},${f(cy - ry * .8)}" stroke="#4a1a17" stroke-width="1.2" stroke-dasharray="4 2" fill="none" opacity=".7"/>`;
+    }
+    return w + '</g>';
+  }
+
   /* shrivelled, crumpled wing with frayed trim and loose threads (Bramble render) */
   function shrivelWing(id, R, cx, cy, rx, ry, rot, trim, shadow) {
     const d = blob(R, cx, cy, rx, ry, 22, .2);
@@ -329,7 +356,7 @@
     const A = shadow ? '#0e0d0c' : c.a, B = shadow ? '#141311' : c.b;
     const outline = shadow ? '#060505' : '#2a2118';
 
-    let s = `<svg class="thang thang-${mode}" viewBox="${view}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${c.name}, a Buggy-Thang plush" data-lid="${E.lid}" data-rim="${E.rim}" data-eyes="${c.eyes}" data-open="${open}">`;
+    let s = `<svg class="thang thang-${mode}" viewBox="${view}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${c.name}, a Buggy-Thang plush" data-lid="${E.lid}" data-rim="${E.rim}" data-eyes="${c.eyes}" data-skew="${c.eyeSkew ? c.eyeSkew.join(',') : '0,0'}" data-open="${open}">`;
     s += `<defs>
       <filter id="${id}f" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="${c.seed}" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.5" xChannelSelector="R" yChannelSelector="G"/></filter>
       <pattern id="${id}s" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="${A}"/><rect width="10" height="5" fill="${B}"/><rect width="10" height=".8" y="4.6" fill="#000" opacity=".18"/><path d="M2 0v10M5 0v10M8 0v10" stroke="#000" stroke-opacity=".08" stroke-width=".8"/></pattern>
@@ -343,7 +370,18 @@
     s += `<g filter="url(#${id}f)">`;
     // tail
     const tail = shadow ? '#0c0b0a' : '#e07a2a';
-    if (c.tail === 'droop') {
+    if (c.tail === 'fray') {
+      s += `<path d="M104,214C72,226 52,206 58,184C63,168 82,170 80,186" fill="none" stroke="${outline}" stroke-width="13.5" stroke-linecap="round"/>`;
+      s += `<path d="M104,214C72,226 52,206 58,184C63,168 82,170 80,186" fill="none" stroke="${tail}" stroke-width="10.5" stroke-linecap="round"/>`;
+      if (!shadow) {
+        let fr = '';
+        for (let i = 0; i < 16; i++) {
+          const x = 62 + R() * 40, y = 200 + R() * 22;
+          fr += `<path d="M${f(x)},${f(y)}q${f((R() - .5) * 10)},${f(8 + R() * 8)} ${f((R() - .5) * 16)},${f(16 + R() * 20)}" stroke="#d9682a" stroke-width="${f(.8 + R())}" fill="none" stroke-linecap="round"/>`;
+        }
+        s += fr + `<path d="M98,212C74,220 60,206 63,190" fill="none" stroke="#f3a25a" stroke-width="2" stroke-linecap="round" opacity=".6"/>`;
+      }
+    } else if (c.tail === 'droop') {
       s += `<path d="M110,204Q82,214 68,246Q60,268 52,292Q50,298 54,296Q66,270 80,242Q94,224 112,220Z" fill="${tail}" stroke="${outline}" stroke-width="1.8" stroke-linejoin="round"/>`;
       if (!shadow) s += `<path d="M53,294l-3,10M55,293l1,11M52,292l-6,7" stroke="#c96a2c" stroke-width="1" stroke-linecap="round"/><path d="M98,214Q78,226 66,252" stroke="#f3a25a" stroke-width="1.6" fill="none" opacity=".6"/>`;
     } else if (c.tail === 'taper') {
@@ -360,7 +398,10 @@
 
     // wings
     const trim = shadow ? '#121110' : c.trim;
-    if (c.wings === 'shrivel') {
+    if (c.wings === 'tatter') {
+      s += tatterWing(id, R, 186, 102, 36, 68, 8, trim, shadow);
+      s += tatterWing(id, R, 138, 108, 40, 70, -24, trim, shadow);
+    } else if (c.wings === 'shrivel') {
       s += shrivelWing(id, R, 186, 100, 30, 64, 6, trim, shadow);
       s += shrivelWing(id, R, 140, 104, 34, 68, -22, trim, shadow);
     } else if (c.wings === 'fan') {
@@ -390,7 +431,8 @@
     });
 
     // body
-    const shaggy = c.fur === 'shaggy' || c.fur === 'patchy';
+    const shaggy = c.fur === 'shaggy' || c.fur === 'patchy' || c.fur === 'chewed';
+    const chewed = c.fur === 'chewed';
     const patchy = c.fur === 'patchy';
     if (shaggy) s += spikes(R, 205, 205, 113, 61, 54, shadow, 0);
     const bodyD = blob(R, 205, 205, 113, 61, 30, .14);
@@ -406,6 +448,35 @@
       }
     }
     if (shaggy && !patchy) s += spikes(R, 205, 200, 98, 50, 34, shadow, 1);
+    if (chewed) {
+      // torn felt where the dog got through: red wool wounds with ragged edges
+      [[270, 178, 20, 14], [166, 214, 15, 11], [236, 222, 13, 9], [112, 204, 11, 8]].forEach(([x, y, rx, ry]) => {
+        s += `<path d="${blob(R, x, y, rx, ry, 12, .45)}" fill="${shadow ? '#121110' : '#a8283a'}"/>`;
+        if (!shadow) {
+          s += `<path d="${blob(R, x + 1, y + 1, rx * .55, ry * .5, 9, .4)}" fill="#6a1220" opacity=".7"/>`;
+          for (let i = 0; i < 12; i++) {
+            const a = R() * Math.PI * 2;
+            s += `<path d="M${f(x + Math.cos(a) * rx)},${f(y + Math.sin(a) * ry)}l${f(-Math.cos(a) * 6)},${f(-Math.sin(a) * 4)}" stroke="${GREENS[(R() * GREENS.length) | 0]}" stroke-width="2" stroke-linecap="round"/>`;
+          }
+        }
+      });
+      if (!shadow) {
+        // yarn guts dangling from the belly
+        const gut = (x, col, len, w) => `<path d="M${x},248q${f(-6 + R() * 12)},${f(len * .3)} ${f(-4 + R() * 8)},${f(len * .5)}q${f(-8 + R() * 16)},${f(len * .25)} ${f(-3 + R() * 6)},${f(len * .5)}" stroke="${col}" stroke-width="${w}" fill="none" stroke-linecap="round"/>`;
+        for (let i = 0; i < 9; i++) s += gut(214 + i * 3, i % 2 ? '#ecc93c' : '#d6ad26', 40 + R() * 22, 3.4);
+        for (let i = 0; i < 6; i++) s += gut(232 + i * 3, i % 2 ? '#2f6a2c' : '#3e7a34', 52 + R() * 24, 3.6);
+        // a chewed chicken bone, ankle knob and all, stuck in his side
+        s += `<g transform="rotate(-24 172 182)">
+          <rect x="150" y="178" width="40" height="8" rx="3.5" fill="#efe6d4" stroke="#a89880" stroke-width="1.2"/>
+          <circle cx="191" cy="178" r="6" fill="#efe6d4" stroke="#a89880" stroke-width="1.2"/><circle cx="192" cy="188" r="5.5" fill="#efe6d4" stroke="#a89880" stroke-width="1.2"/>
+          <rect x="182" y="179" width="10" height="6" fill="#efe6d4"/>
+          <path d="M156,180l3,3M163,184l2,-3M171,180l2,3" stroke="#b0a188" stroke-width="1"/>
+          <circle cx="152" cy="182" r="4.5" fill="#d7c8ae" stroke="#a89880" stroke-width="1"/>
+        </g>`;
+        // slobber sheen on the snout
+        for (let i = 0; i < 10; i++) s += `<circle cx="${f(318 + R() * 40)}" cy="${f(200 + R() * 40)}" r="${f(.8 + R() * 1.4)}" fill="#fff" opacity=".55"/>`;
+      }
+    }
     if (patchy) {
       // thinning fur: irritated, flaky patches where the felt has worn through
       [[150, 196, 24, 17], [222, 184, 20, 14], [240, 222, 16, 12], [292, 196, 12, 9], [178, 230, 13, 9], [120, 214, 10, 8]].forEach(([x, y, rx, ry]) => {
@@ -445,7 +516,7 @@
     s += `</g>`; // end felt filter group
 
     // mouth
-    const lip = shadow ? '#141210' : '#f0a184', lipS = shadow ? '#0a0909' : '#cc7458';
+    const lip = shadow ? '#141210' : (c.lipColor || '#f0a184'), lipS = shadow ? '#0a0909' : (c.lipColor ? '#a94e62' : '#cc7458');
     const croc = c.snout === 'croc';
     const mx = croc ? 371 : 344, my = croc ? 224 : 229;
     if (horror) {
@@ -464,7 +535,7 @@
       s += `<ellipse cx="${mx + 1}" cy="${my + 9}" rx="13.5" ry="9.5" fill="${lip}" stroke="${lipS}" stroke-width="2" transform="rotate(14 ${mx + 1} ${my + 9})"/>`;
       if (!shadow) s += `<ellipse cx="${mx + 1}" cy="${my - 12}" rx="5" ry="3" fill="#fff" opacity=".28"/>`;
       s += `<path d="M${mx - 9},${my + 1}Q${mx + 2},${my + 3} ${mx + 14},${my - 1}" stroke="${shadow ? '#000' : '#9c4a40'}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
-      if (c.sick) {
+      if (c.sick || c.slobber) {
         // tongue lolling out, and clear rubbery drips hanging from the lips
         s += `<path d="M${mx + 2},${my + 1}q14,2 16,12q-1,8 -9,6q-6,-4 -9,-14z" fill="${shadow ? '#151312' : '#c9798f'}" stroke="${shadow ? '#000' : '#9c5266'}" stroke-width="1.2"/>`;
         if (!shadow) {
@@ -494,7 +565,7 @@
     const eyeR = rng(c.seed + 99);
     const eStyle = hood ? 'hood' : c.eyes;
     s += eye(238, 72 + eyeDy, open, E, lx, ly, eyeR, eStyle, id + 'e');
-    s += eye(302, 62 + eyeDy, open, E, lx, ly, eyeR, eStyle, id + 'e');
+    s += eye(302, 62 + eyeDy, clamp(open + (c.eyeSkew ? c.eyeSkew[1] : 0), .04, 1), E, lx, ly, eyeR, eStyle, id + 'e');
     if (c.sick && !shadow) {
       // wet, weepy eyes: a tear track and a hanging drop under each
       [[238, 72], [302, 62]].forEach(([x, y], i) => {
@@ -512,7 +583,8 @@
     svg.dataset.open = o;
     const lid = svg.dataset.lid, rim = svg.dataset.rim, style = svg.dataset.eyes;
     const st = style === 'sore' ? 'hood' : style;
-    svg.querySelectorAll('.lid').forEach(g => { g.innerHTML = lidMarkup(o, lid, rim, st); });
+    const sk = (svg.dataset.skew || '0,0').split(',').map(Number);
+    svg.querySelectorAll('.lid').forEach((g, i) => { g.innerHTML = lidMarkup(clamp(+o + (o > .97 ? 0 : (sk[i] || 0)), .04, 1), lid, rim, st); });
   }
 
   function look(svg, x, y) {
