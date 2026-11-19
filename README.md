@@ -30,7 +30,11 @@ A marketing site for a line of hand-felted plush art toys that gets steadily str
 - **Order tracker** (`track.html`, `js/track.js`): checkout never succeeds, but every attempt starts an order anyway. It advances in real time across visits: received → felting (2 min) → settling (10 min) → shipped (1 h) → in transit to the visitor's city (6 h) → out for delivery (20 h) → delivered, "left at: inside" (28 h) → "It's inside" (36 h). Buggy-Bot announces each new step when the visitor comes back.
 - **Hours** (`js/night.js`): morning and evening copy changes; after 9 PM the ghosts are active from the start; 3–4 AM the studio is "closed" and the night shift runs the store (silhouette Thangs, "Let it in" buttons, closed prices); at 3:12 AM Muffi wakes up.
 
+### Alternative holiday gift guide (`js/holidays.js`)
+23 pagan, occult, alternative and historical celebrations (Saturnalia, Yule, Brumalia, Krampusnacht, Walpurgisnacht, Festivus, St. Tib's Day…). From the visitor's date the site finds what's on now (the most specific one wins) or next, shows a gift-guide strip on the shop and above the home lineup, and feeds Buggy-Bot holiday lines at every hostility level, each with its own dark turn.
+
 ### Preview switches
+- `?date=2026-12-05` on any page to see the gift guide on another day
 - `?tod=morning` · `?tod=evening` · `?tod=night` · `?tod=3am` · `?tod=312` on any page
 - `track.html?demo` starts an order without checking out; `track.html?fast` plays the tracker at 600× (an hour every 6 seconds)
 

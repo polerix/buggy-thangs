@@ -526,3 +526,11 @@ body[data-hostile="4"] .bot-toggle { border-color: #e8693f; box-shadow: 0 0 0 3p
 .film-cap { font-size: .85rem; color: var(--ink-soft); margin-top: 10px; }
 .film-frame.glitch .fv.on { filter: url(#bt-tear) hue-rotate(40deg) contrast(1.3); transform: translateX(6px); }
 .film-frame [hidden] { display: none !important; }
+
+/* alternative holiday gift guide */
+.gift-guide { margin: 26px 0 8px; padding: 14px 18px; border-radius: 14px; border: 1.5px dashed rgba(42,33,24,.35); background: rgba(255,255,255,.4); display: grid; gap: 4px; max-width: 760px; }
+.gift-guide b { font-family: var(--display); font-size: 1.05rem; }
+.gift-guide span { font-size: .98rem; }
+.gift-guide small { color: var(--ink-soft); font-size: .82rem; font-style: italic; }
+#lineup .gift-guide { margin-top: 22px; }
+body[data-hostile="3"] .gift-guide, body[data-hostile="4"] .gift-guide { border-color: #7d1610; }
