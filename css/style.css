@@ -542,3 +542,20 @@ body[data-hostile="3"] .gift-guide, body[data-hostile="4"] .gift-guide { border-
 .archive figcaption { margin-top: 12px; font-size: .92rem; line-height: 1.5; color: var(--ink-soft); }
 .archive figcaption b { color: var(--ink); }
 @media (max-width: 760px) { .archive { grid-template-columns: 1fr; } }
+
+/* brand mark */
+img.logo-mark { width: 40px; height: 40px; flex: none; display: block; transition: transform .3s ease; }
+.logo:hover img.logo-mark { transform: rotate(-6deg); }
+.drawer-head b { display: flex; align-items: center; gap: 10px; }
+.drawer-mark { width: 30px; height: 30px; }
+.ck-mark { width: 56px; height: 56px; display: block; margin: 0 0 12px; }
+.foot-brand { display: flex; align-items: center; gap: 12px; }
+.foot-brand img { width: 34px; height: 34px; opacity: .85; }
+@media (max-width: 720px) {
+  .nav .wrap { gap: 10px; padding: 0 14px; }
+  .logo { font-size: 1.1rem; white-space: nowrap; gap: 8px; }
+  img.logo-mark { width: 32px; height: 32px; }
+  .nav-links { gap: 12px; }
+  .nav-links a.track, .cart { white-space: nowrap; font-size: .82rem; }
+  .cart { padding: 6px 11px; }
+}

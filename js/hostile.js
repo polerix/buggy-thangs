@@ -71,7 +71,7 @@
   const drawer = document.createElement('aside');
   drawer.className = 'drawer';
   drawer.setAttribute('aria-label', 'Cart');
-  drawer.innerHTML = `<div class="drawer-head"><b>Your cart</b><button class="drawer-x" type="button" aria-label="Close cart">×</button></div>
+  drawer.innerHTML = `<div class="drawer-head"><b><img class="drawer-mark" src="images/brand/buggy-thangs-mark.svg" alt="">Your cart</b><button class="drawer-x" type="button" aria-label="Close cart">×</button></div>
     <ul class="drawer-items"></ul>
     <div class="drawer-foot"><div class="drawer-total"></div><button class="btn checkout" type="button">Checkout</button></div>`;
   const scrim = document.createElement('div');
@@ -317,7 +317,7 @@
   /* checkout never goes through */
   const modal = document.createElement('div');
   modal.className = 'checkout-modal';
-  modal.innerHTML = `<div class="ck"><b class="ck-title">Processing your order…</b><div class="ck-bar"><i></i></div><p class="ck-msg">Securely connecting to the studio.</p><button class="btn ghost ck-close" type="button">Close</button></div>`;
+  modal.innerHTML = `<div class="ck"><img class="ck-mark" src="images/brand/buggy-thangs-mark.svg" alt="Buggy-Thangs"><b class="ck-title">Processing your order…</b><div class="ck-bar"><i></i></div><p class="ck-msg">Securely connecting to the studio.</p><button class="btn ghost ck-close" type="button">Close</button></div>`;
   body.appendChild(modal);
   modal.querySelector('.ck-close').addEventListener('click', () => modal.classList.remove('open'));
   drawer.querySelector('.checkout').addEventListener('click', () => {
@@ -565,6 +565,18 @@
     setAvatar(L >= 4);
     if (L >= 4) bot.classList.add('open');
     renderCartLight();
+    wakeMark(L >= 3);
+  }
+  // once the brand turns, the logo (and the tab icon) open their eyes
+  let markAwake = false;
+  function wakeMark(on) {
+    if (on === markAwake) return;
+    markAwake = on;
+    const src = on ? 'images/brand/buggy-thangs-mark-awake.svg' : 'images/brand/buggy-thangs-mark.svg';
+    $$('img.logo-mark, img.drawer-mark, img.ck-mark, .foot-brand img').forEach(i => { i.src = src; });
+    const svgIcon = $('link[rel="icon"][type="image/svg+xml"]'), ico = $('link[rel="icon"][sizes="any"]');
+    if (svgIcon) svgIcon.href = on ? 'images/brand/buggy-thangs-mark-awake.svg' : 'images/brand/favicon.svg';
+    if (ico) ico.href = on ? 'images/brand/buggy-thangs-mark-awake.svg' : 'images/brand/favicon.ico';
   }
   let lastEmptyL = -1;
   function renderCartLight() { if (!cart.length && lastEmptyL !== L) { lastEmptyL = L; renderCart(); } }

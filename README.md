@@ -54,6 +54,9 @@ Eight scene clips in `video/scenes/`, cut from three source films (nice fabricat
 
 The player assembles a cut live: 0 brand film → 1 a frame of the factory slips in and they fray → 2 they come alive → 3 the narration runs into the factory. The cut depends on hostility, ghosts, depth and the hour, and each rewatch is one cut worse.
 
+## Brand mark
+`images/brand/`: the peace-hand mark (eyestalks as the V, lips as the thumb) as favicon (ICO + SVG), Apple touch icon, header, footer, cart drawer and checkout. `buggy-thangs-mark-awake.svg` is a lidless variant: once the brand turns threatening, the header logo and the browser-tab icon open their eyes.
+
 ## Privacy
 Nothing leaves the browser. No analytics, no network calls besides Google Fonts. All personal details are read locally and written only into the page.
 
