@@ -7,7 +7,8 @@ A marketing site for a line of hand-felted plush art toys that gets steadily str
 **Pages:** `index.html` (full descent), `shop.html`, `care.html`, `about.html`, `404.html`.
 
 ## How it works
-- `js/muffi.js` draws every Thang procedurally as SVG (mossy felt body, knit eyestalks, sleepy glass eyes, textile wings, six legs in felt boots). Eyelids and pupils are live, so the plush can wake up and track the visitor.
+- `js/muffi.js` draws every Thang procedurally as SVG from swappable parts (snout, eyes, wings, boots, tail, fur, legs). Muffi uses the render set that matches the studio photo; the rest of the line mixes render parts with the original ones.
+  It draws (mossy felt body, knit eyestalks, sleepy glass eyes, textile wings, six legs in felt boots). Eyelids and pupils are live, so the plush can wake up and track the visitor.
 - `js/creep.js` is the escalation engine. Each section carries a `data-s` stage (0 normal → 4 horror). It drives:
   - darkening vignette and grain
   - text and plush that change **while offscreen** (`data-alt`, `data-later`), so scrolling back up shows a different page

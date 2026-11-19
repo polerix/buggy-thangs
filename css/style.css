@@ -340,7 +340,7 @@ body.taking { overflow-anchor: none; }
 .takeover-msg.on { opacity: 1; }
 .stopper { position: fixed; inset: 0; z-index: 95; background: #000; opacity: 0; pointer-events: none; transition: opacity .7s ease; overflow: hidden; }
 .stopper.on { opacity: 1; pointer-events: auto; }
-.stop-face { position: absolute; left: 50%; top: 42%; width: max(118vw, 150vh); transform: translate(-50%, -50%); opacity: 0; transition: opacity 3.2s ease; filter: saturate(.7) contrast(1.2) brightness(.8); }
+.stop-face { position: absolute; left: 50%; top: 42%; width: max(100vw, 128vh); transform: translate(-50%, -50%); opacity: 0; transition: opacity 3.2s ease; filter: saturate(.7) contrast(1.2) brightness(.8); }
 .stop-face.on { opacity: 1; }
 .stop-face .thang { animation: breathe-big 6s ease-in-out infinite; }
 .stop-lines { position: absolute; left: 0; right: 0; bottom: 12vh; text-align: center; padding: 0 24px; font-family: var(--fell); font-size: clamp(1.5rem, 3.6vw, 2.6rem); color: #eee2cf; text-shadow: 0 0 24px #000, 0 0 6px #000; }
@@ -349,4 +349,4 @@ body.taking { overflow-anchor: none; }
 .stop-lines a { font-family: var(--body); font-size: .85rem; letter-spacing: .12em; text-transform: uppercase; color: #8f8574; }
 
 body.taking .wake-lines { opacity: 0; transition: opacity .6s ease; }
-@media (orientation: portrait) { .stop-face { width: 168vw; top: 33%; } }
+@media (orientation: portrait) { .stop-face { width: 150vw; top: 33%; } }
