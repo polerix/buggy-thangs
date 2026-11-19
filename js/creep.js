@@ -219,8 +219,12 @@
   wbox.setAttribute('aria-live', 'polite');
   body.appendChild(wbox);
   let wTimer, lastWhisper = 0;
+  const quietZones = $$('[data-quiet]');
+  function inQuietZone() {
+    return quietZones.some(el => { const r = el.getBoundingClientRect(); return r.top < innerHeight * .9 && r.bottom > innerHeight * .1; });
+  }
   function whisper(text, ms = 4600) {
-    if (!text || Date.now() - lastWhisper < 3500) return;
+    if (!text || Date.now() - lastWhisper < 3500 || inQuietZone()) return;
     lastWhisper = Date.now();
     wbox.textContent = text;
     wbox.style.left = (8 + Math.random() * 45) + 'vw';
