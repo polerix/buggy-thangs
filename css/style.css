@@ -588,3 +588,7 @@ img.logo-mark { width: 40px; height: 40px; flex: none; display: block; transitio
 .statement-sign { margin-top: 26px !important; font-size: .85rem; color: #5d5040; }
 .statement .sig { font-family: var(--scrawl); font-size: 1.8rem; color: #1d2b4a; margin-left: 8px; vertical-align: -4px; }
 @media (max-width: 720px) { .statement { padding: 30px 22px; } }
+
+/* care: why wool */
+.wool-facts { padding-left: 1.2em; margin: 0 0 1.2em; }
+.wool-facts li { margin: 0 0 .5em; }

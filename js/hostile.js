@@ -189,6 +189,14 @@
     ['Add to cart.', 'It\'s {time} in {city}. You\'re still here. Your cart is still empty.', 'You can\'t keep taking without giving.', 'The makers need the order. Add to cart.'],
     ['ADD TO CART.', 'YOU DON\'T LEAVE UNTIL THE CART IS FULL.', '{CITY}. {DEVICE}. {time}. WE HAVE EVERYTHING EXCEPT YOUR ORDER.', 'THEY ARE ALREADY FELTING YOURS.']
   ];
+  const WOOL = [
+    ['Fun fact: wool is renewable. It grows right back on the sheep. 🐑', 'Wool won\'t ignite below about 570°C. Safest thing in your dorm.'],
+    ['Wool rarely triggers allergies. Your roommate has no excuse.', 'Wool is biodegradable. Your indecision isn\'t.'],
+    ['Wool resists bacteria. Nothing grows on a Thang unless we let it.', 'Gardeners bury wool for the nitrogen. We bury other things.'],
+    ['Wool grows back. Everything we take grows back.', 'Wool doesn\'t burn below 570°C. We checked. Twice.'],
+    ['WOOL DOESN\'T BURN. WE TRIED.', 'WOOL FEEDS THE SOIL. ADD TO CART.']
+  ];
+  for (let i = 0; i < LINES.length; i++) LINES[i] = LINES[i].concat(WOOL[i]);
   if (TOD.tod === 'night') LINES[0] = ['Up late? Same. 🐛 The night shift is packing orders right now.', 'Can\'t sleep? Muffi can\'t either.', 'It\'s {time}. Perfect time to treat yourself.'];
   if (TOD.tod === 'evening') LINES[0] = ['Evening! Winding down? 🐛', 'Move-in week starts soon. Is your shelf ready?', 'Doza is great company on a quiet night.'];
   // the alternative holiday gift guide: whatever is on now, or coming next (double weight)
